@@ -1,0 +1,57 @@
+{
+  "voters": [
+    {
+      "id": "38860346",
+      "name": "Moreen Wanjiku",
+      "dob": "2000-02-16"
+    },
+    {
+      "id": "38860346",
+      "name": "Moreen Wanjiku",
+      "dob": "2000-02-16"
+    },
+    {
+      "id": "38860346",
+      "name": "Moreen Wanjiku",
+      "dob": "2000-02-16"
+    },
+    {
+      "id": "38860346",
+      "name": "Moreen Wanjiku",
+      "dob": "2000-02-16"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "456776",
+      "name": "Karen Nyamu",
+      "party": "UDA"
+    },
+    {
+      "id": "456776",
+      "name": "Kimani Ichung'wa",
+      "party": "UDA"
+    }
+  ],
+  "elections": [
+    {
+      "id": "047",
+      "name": "Member of Parliament",
+      "date": "2024-07-22"
+    }
+  ],
+  "votes": [
+    {
+      "id": "b281",
+      "voterId": "38860346",
+      "electionId": "456776",
+      "candidateId": "Karen Nyamu"
+    },
+    {
+      "id": "6933",
+      "voterId": "38860346",
+      "electionId": "456776",
+      "candidateId": "Karen Nyamu"
+    }
+  ]
+}
