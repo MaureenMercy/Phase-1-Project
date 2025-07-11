@@ -315,25 +315,70 @@ function setupVoterFunctions() {
     window.showCandidates = function() {
         showModal('Candidate Profiles', `
             <div class="candidates-list">
-                <div class="candidate-card mb-3 p-3 border rounded">
-                    <h5>Presidential Candidates</h5>
+                <div class="candidate-card mb-4 p-3 border rounded">
+                    <h5 class="text-primary mb-3"><i class="fas fa-star me-2"></i>Presidential Candidates</h5>
                     <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <strong>William Ruto</strong> - Kenya Kwanza
+                        <div class="col-md-6 mb-3">
+                            <div class="candidate-profile p-3 border rounded">
+                                <h6><strong>William Ruto</strong></h6>
+                                <p class="mb-1"><small class="text-muted">Party: UDA</small></p>
+                                <p class="mb-0"><small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Rigathi Gachagua</small></p>
+                            </div>
                         </div>
-                        <div class="col-md-6 mb-2">
-                            <strong>Raila Odinga</strong> - Azimio la Umoja
+                        <div class="col-md-6 mb-3">
+                            <div class="candidate-profile p-3 border rounded">
+                                <h6><strong>Raila Odinga</strong></h6>
+                                <p class="mb-1"><small class="text-muted">Party: ODM</small></p>
+                                <p class="mb-0"><small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Martha Karua</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="candidate-card mb-4 p-3 border rounded">
+                    <h5 class="text-success mb-3"><i class="fas fa-building me-2"></i>Governor Candidates</h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="candidate-profile p-3 border rounded">
+                                <h6><strong>Faith Kamande</strong></h6>
+                                <p class="mb-1"><small class="text-muted">Party: KANU</small></p>
+                                <p class="mb-0"><small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: James Wanyoike</small></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="candidate-profile p-3 border rounded">
+                                <h6><strong>Johnson Sakaja</strong></h6>
+                                <p class="mb-1"><small class="text-muted">Party: UDA</small></p>
+                                <p class="mb-0"><small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Ann Kananu</small></p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="candidate-profile p-3 border rounded">
+                                <h6><strong>Polycarp Igathe</strong></h6>
+                                <p class="mb-1"><small class="text-muted">Party: ODM</small></p>
+                                <p class="mb-0"><small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Philip Kisia</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="candidate-card mb-4 p-3 border rounded">
+                    <h5 class="text-purple mb-3"><i class="fas fa-gavel me-2"></i>Senator Candidates</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="candidate-profile p-3 border rounded">
+                                <h6><strong>Karen Nyamu</strong></h6>
+                                <p class="mb-0"><small class="text-muted">Party: UDA</small></p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="candidate-card mb-3 p-3 border rounded">
-                    <h5>Governor Candidates</h5>
+                    <h5 class="text-warning mb-3"><i class="fas fa-users me-2"></i>Member of Parliament Candidates</h5>
                     <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <strong>Johnson Sakaja</strong> - Kenya Kwanza
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <strong>Polycarp Igathe</strong> - Azimio la Umoja
+                        <div class="col-md-6 mb-3">
+                            <div class="candidate-profile p-3 border rounded">
+                                <h6><strong>Kimani Ichung'wa</strong></h6>
+                                <p class="mb-0"><small class="text-muted">Party: UDA</small></p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -342,14 +387,170 @@ function setupVoterFunctions() {
     };
     
     window.showVotingInterface = function() {
-        showModal('Cast Your Vote', `
-            <div class="voting-interface">
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <strong>Voting is currently:</strong> <span class="text-danger">CLOSED</span>
+        showModal('Cast Your Vote - Electronic Ballot', `
+            <div class="voting-interface" style="max-height: 600px; overflow-y: auto;">
+                <div class="alert alert-success mb-4">
+                    <i class="fas fa-vote-yea me-2"></i>
+                    <strong>Voting is now OPEN</strong> - Select your candidates below
                 </div>
-                <p>Voting will open on election day from 6:00 AM to 6:00 PM.</p>
-                <p>Make sure to bring your national ID card to the polling station.</p>
+                
+                <!-- Presidential Ballot Section -->
+                <div class="ballot-section mb-4 p-3 bg-light rounded">
+                    <h5 class="text-center mb-3 text-primary">
+                        <i class="fas fa-star me-2"></i>PRESIDENTIAL ELECTION
+                        <small class="d-block text-muted">Select ONE candidate</small>
+                    </h5>
+                    
+                    <div class="candidate-card mb-3 p-3 border rounded bg-white" style="border-left: 4px solid #FFD700; cursor: pointer;" onclick="selectCandidate('president', 'CAND005')">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 60px; height: 60px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-star text-white"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>William Ruto</strong></h6>
+                                    <p class="mb-1"><small class="text-muted">Party: UDA</small></p>
+                                    <p class="mb-0"><small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Rigathi Gachagua (Running Mate)</small></p>
+                                </div>
+                            </div>
+                            <div class="vote-selector">
+                                <input type="radio" name="president" id="pres1" class="form-check-input" style="transform: scale(1.5);">
+                                <label for="pres1" class="btn btn-outline-success btn-sm ms-2">Select</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="candidate-card mb-3 p-3 border rounded bg-white" style="border-left: 4px solid #87CEEB; cursor: pointer;" onclick="selectCandidate('president', 'CAND004')">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 60px; height: 60px; background: #87CEEB; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-hand text-white"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Raila Odinga</strong></h6>
+                                    <p class="mb-1"><small class="text-muted">Party: ODM</small></p>
+                                    <p class="mb-0"><small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Martha Karua (Running Mate)</small></p>
+                                </div>
+                            </div>
+                            <div class="vote-selector">
+                                <input type="radio" name="president" id="pres2" class="form-check-input" style="transform: scale(1.5);">
+                                <label for="pres2" class="btn btn-outline-success btn-sm ms-2">Select</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Governor Ballot Section -->
+                <div class="ballot-section mb-4 p-3 bg-light rounded">
+                    <h5 class="text-center mb-3 text-success">
+                        <i class="fas fa-building me-2"></i>GOVERNOR ELECTION
+                        <small class="d-block text-muted">Select ONE candidate</small>
+                    </h5>
+                    
+                    <div class="candidate-card mb-3 p-3 border rounded bg-white" style="border-left: 4px solid #28a745; cursor: pointer;" onclick="selectCandidate('governor', 'CAND006')">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 60px; height: 60px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-building text-white"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Faith Kamande</strong></h6>
+                                    <p class="mb-1"><small class="text-muted">Party: KANU</small></p>
+                                    <p class="mb-0"><small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: James Wanyoike (Running Mate)</small></p>
+                                </div>
+                            </div>
+                            <div class="vote-selector">
+                                <input type="radio" name="governor" id="gov1" class="form-check-input" style="transform: scale(1.5);">
+                                <label for="gov1" class="btn btn-outline-success btn-sm ms-2">Select</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="candidate-card mb-3 p-3 border rounded bg-white" style="border-left: 4px solid #17a2b8; cursor: pointer;" onclick="selectCandidate('governor', 'CAND007')">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 60px; height: 60px; background: #17a2b8; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-city text-white"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Johnson Sakaja</strong></h6>
+                                    <p class="mb-1"><small class="text-muted">Party: UDA</small></p>
+                                    <p class="mb-0"><small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Ann Kananu (Running Mate)</small></p>
+                                </div>
+                            </div>
+                            <div class="vote-selector">
+                                <input type="radio" name="governor" id="gov2" class="form-check-input" style="transform: scale(1.5);">
+                                <label for="gov2" class="btn btn-outline-success btn-sm ms-2">Select</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Senator Ballot Section -->
+                <div class="ballot-section mb-4 p-3 bg-light rounded">
+                    <h5 class="text-center mb-3" style="color: #6f42c1;">
+                        <i class="fas fa-gavel me-2"></i>SENATOR ELECTION
+                        <small class="d-block text-muted">Select ONE candidate</small>
+                    </h5>
+                    
+                    <div class="candidate-card mb-3 p-3 border rounded bg-white" style="border-left: 4px solid #6f42c1; cursor: pointer;" onclick="selectCandidate('senator', 'CAND001')">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 60px; height: 60px; background: #6f42c1; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-gavel text-white"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Karen Nyamu</strong></h6>
+                                    <p class="mb-1"><small class="text-muted">Party: UDA</small></p>
+                                </div>
+                            </div>
+                            <div class="vote-selector">
+                                <input type="radio" name="senator" id="sen1" class="form-check-input" style="transform: scale(1.5);">
+                                <label for="sen1" class="btn btn-outline-success btn-sm ms-2">Select</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- MP Ballot Section -->
+                <div class="ballot-section mb-4 p-3 bg-light rounded">
+                    <h5 class="text-center mb-3 text-warning">
+                        <i class="fas fa-users me-2"></i>MEMBER OF PARLIAMENT
+                        <small class="d-block text-muted">Select ONE candidate</small>
+                    </h5>
+                    
+                    <div class="candidate-card mb-3 p-3 border rounded bg-white" style="border-left: 4px solid #fd7e14; cursor: pointer;" onclick="selectCandidate('mp', 'CAND002')">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 60px; height: 60px; background: #fd7e14; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-users text-white"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Kimani Ichung'wa</strong></h6>
+                                    <p class="mb-1"><small class="text-muted">Party: UDA</small></p>
+                                </div>
+                            </div>
+                            <div class="vote-selector">
+                                <input type="radio" name="mp" id="mp1" class="form-check-input" style="transform: scale(1.5);">
+                                <label for="mp1" class="btn btn-outline-success btn-sm ms-2">Select</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg" onclick="submitVote()">
+                        <i class="fas fa-check me-2"></i>SUBMIT VOTE
+                    </button>
+                    <button class="btn btn-secondary btn-lg ms-2" onclick="resetBallot()">
+                        <i class="fas fa-undo me-2"></i>RESET
+                    </button>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Note:</strong> Deputies/Running Mates are displayed for information only. Your vote is for the main candidate.
+                </div>
             </div>
         `);
     };
@@ -359,26 +560,116 @@ function setupVoterFunctions() {
             <div class="ballot-preview">
                 <div class="ballot-section mb-4">
                     <h5 class="text-center mb-3" style="color: var(--iebc-secondary);">PRESIDENTIAL ELECTION</h5>
-                    <div class="candidate-option mb-2 p-2 border rounded">
-                        <div class="d-flex align-items-center">
-                            <div class="symbol me-3" style="width: 50px; height: 50px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-star"></i>
+                    <div class="candidate-card mb-3 p-3 border rounded" style="border-left: 4px solid #FFD700;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 50px; height: 50px; background: #FFD700; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>William Ruto</strong></h6>
+                                    <small class="text-muted">Party: UDA</small><br>
+                                    <small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Rigathi Gachagua (Running Mate)</small>
+                                </div>
                             </div>
-                            <div>
-                                <strong>William Ruto</strong><br>
-                                <small>Kenya Kwanza Coalition</small>
-                            </div>
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-check me-1"></i>Select Candidate
+                            </button>
                         </div>
                     </div>
-                    <div class="candidate-option mb-2 p-2 border rounded">
-                        <div class="d-flex align-items: center">
-                            <div class="symbol me-3" style="width: 50px; height: 50px; background: #87CEEB; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-hand"></i>
+                    <div class="candidate-card mb-3 p-3 border rounded" style="border-left: 4px solid #87CEEB;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 50px; height: 50px; background: #87CEEB; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-hand"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Raila Odinga</strong></h6>
+                                    <small class="text-muted">Party: ODM</small><br>
+                                    <small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Martha Karua (Running Mate)</small>
+                                </div>
                             </div>
-                            <div>
-                                <strong>Raila Odinga</strong><br>
-                                <small>Azimio la Umoja One Kenya</small>
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-check me-1"></i>Select Candidate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ballot-section mb-4">
+                    <h5 class="text-center mb-3" style="color: var(--iebc-secondary);">GOVERNOR ELECTION</h5>
+                    <div class="candidate-card mb-3 p-3 border rounded" style="border-left: 4px solid #28a745;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 50px; height: 50px; background: #28a745; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Faith Kamande</strong></h6>
+                                    <small class="text-muted">Party: KANU</small><br>
+                                    <small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: James Wanyoike (Running Mate)</small>
+                                </div>
                             </div>
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-check me-1"></i>Select Candidate
+                            </button>
+                        </div>
+                    </div>
+                    <div class="candidate-card mb-3 p-3 border rounded" style="border-left: 4px solid #17a2b8;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 50px; height: 50px; background: #17a2b8; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-city"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Johnson Sakaja</strong></h6>
+                                    <small class="text-muted">Party: UDA</small><br>
+                                    <small class="text-info"><i class="fas fa-user-tie me-1"></i>Deputy: Ann Kananu (Running Mate)</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-check me-1"></i>Select Candidate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ballot-section mb-4">
+                    <h5 class="text-center mb-3" style="color: var(--iebc-secondary);">SENATOR ELECTION</h5>
+                    <div class="candidate-card mb-3 p-3 border rounded" style="border-left: 4px solid #6f42c1;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 50px; height: 50px; background: #6f42c1; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-gavel"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Karen Nyamu</strong></h6>
+                                    <small class="text-muted">Party: UDA</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-check me-1"></i>Select Candidate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ballot-section mb-4">
+                    <h5 class="text-center mb-3" style="color: var(--iebc-secondary);">MEMBER OF PARLIAMENT</h5>
+                    <div class="candidate-card mb-3 p-3 border rounded" style="border-left: 4px solid #fd7e14;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="symbol me-3" style="width: 50px; height: 50px; background: #fd7e14; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="candidate-info">
+                                    <h6 class="mb-1"><strong>Kimani Ichung'wa</strong></h6>
+                                    <small class="text-muted">Party: UDA</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-check me-1"></i>Select Candidate
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -412,6 +703,91 @@ function setupVoterFunctions() {
                 </button>
             </div>
         `);
+    };
+    
+    // Voting Interface Functions
+    window.selectCandidate = function(position, candidateId) {
+        // Handle candidate selection
+        const radioButton = document.querySelector(`input[name="${position}"]`);
+        if (radioButton) {
+            radioButton.checked = true;
+            // Highlight selected candidate
+            document.querySelectorAll(`input[name="${position}"]`).forEach(radio => {
+                const card = radio.closest('.candidate-card');
+                if (card) {
+                    card.style.backgroundColor = radio.checked ? '#e8f5e8' : 'white';
+                    card.style.borderWidth = radio.checked ? '2px' : '1px';
+                }
+            });
+        }
+    };
+    
+    window.submitVote = function() {
+        const selections = {
+            president: document.querySelector('input[name="president"]:checked'),
+            governor: document.querySelector('input[name="governor"]:checked'),
+            senator: document.querySelector('input[name="senator"]:checked'),
+            mp: document.querySelector('input[name="mp"]:checked')
+        };
+        
+        const selectedCount = Object.values(selections).filter(s => s).length;
+        
+        if (selectedCount === 0) {
+            showMessage('Please select at least one candidate before submitting', 'warning');
+            return;
+        }
+        
+        // Confirm submission
+        const confirmModal = `
+            <div class="vote-confirmation">
+                <h5 class="text-center mb-3"><i class="fas fa-check-circle text-success me-2"></i>Confirm Your Vote</h5>
+                <p class="text-center mb-3">You have selected ${selectedCount} candidate(s). Please review and confirm:</p>
+                <div class="selections-summary">
+                    ${selections.president ? '<p><strong>President:</strong> ' + selections.president.closest('.candidate-card').querySelector('h6').textContent + '</p>' : ''}
+                    ${selections.governor ? '<p><strong>Governor:</strong> ' + selections.governor.closest('.candidate-card').querySelector('h6').textContent + '</p>' : ''}
+                    ${selections.senator ? '<p><strong>Senator:</strong> ' + selections.senator.closest('.candidate-card').querySelector('h6').textContent + '</p>' : ''}
+                    ${selections.mp ? '<p><strong>MP:</strong> ' + selections.mp.closest('.candidate-card').querySelector('h6').textContent + '</p>' : ''}
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-success btn-lg me-2" onclick="finalizeVote()">
+                        <i class="fas fa-check me-1"></i>CONFIRM & SUBMIT
+                    </button>
+                    <button class="btn btn-secondary btn-lg" onclick="closeModal()">
+                        <i class="fas fa-times me-1"></i>Go Back
+                    </button>
+                </div>
+            </div>
+        `;
+        showModal('Confirm Vote Submission', confirmModal);
+    };
+    
+    window.finalizeVote = function() {
+        // Simulate vote submission
+        closeModal();
+        showMessage('Your vote has been successfully submitted and recorded!', 'success');
+        setTimeout(() => {
+            closeModal(); // Close the voting interface
+        }, 2000);
+    };
+    
+    window.resetBallot = function() {
+        // Reset all selections
+        document.querySelectorAll('.voting-interface input[type="radio"]').forEach(radio => {
+            radio.checked = false;
+            const card = radio.closest('.candidate-card');
+            if (card) {
+                card.style.backgroundColor = 'white';
+                card.style.borderWidth = '1px';
+            }
+        });
+        showMessage('Ballot has been reset', 'info');
+    };
+    
+    window.closeModal = function() {
+        const modal = document.querySelector('.modal');
+        if (modal) {
+            modal.remove();
+        }
     };
 }
 
