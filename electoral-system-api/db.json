@@ -55,7 +55,40 @@
       "name": "Raila Odinga",
       "party": "ODM",
       "position": "President",
+      "deputy": "Martha Karua",
       "registrationDate": "2024-01-11T09:30:00.000Z"
+    },
+    {
+      "id": "CAND005",
+      "name": "William Ruto",
+      "party": "UDA",
+      "position": "President",
+      "deputy": "Rigathi Gachagua",
+      "registrationDate": "2024-01-11T10:00:00.000Z"
+    },
+    {
+      "id": "CAND006",
+      "name": "Faith Kamande",
+      "party": "KANU",
+      "position": "Governor",
+      "deputy": "James Wanyoike",
+      "registrationDate": "2024-01-12T08:00:00.000Z"
+    },
+    {
+      "id": "CAND007",
+      "name": "Johnson Sakaja",
+      "party": "UDA",
+      "position": "Governor",
+      "deputy": "Ann Kananu",
+      "registrationDate": "2024-01-12T08:30:00.000Z"
+    },
+    {
+      "id": "CAND008",
+      "name": "Polycarp Igathe",
+      "party": "ODM",
+      "position": "Governor",
+      "deputy": "Philip Kisia",
+      "registrationDate": "2024-01-12T09:00:00.000Z"
     }
   ],
   "elections": [
