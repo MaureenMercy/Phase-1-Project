@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IEBC Board & Executive Dashboard</title>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" rel="stylesheet">
+    <style>
+        .executive-header {
+            background: linear-gradient(135deg, #0d1421 0%, #1e3c72 50%, #2a5298 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .executive-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" patternUnits="userSpaceOnUse" width="100" height="100"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grain)"/></svg>');
+        }
+        .executive-logo {
+            font-size: 4rem;
+            color: #ffd700;
+            animation: glow 3s ease-in-out infinite;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+        }
+        .auth-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0d1421 0%, #1e3c72 50%, #2a5298 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .auth-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255,215,0,0.1) 0%, transparent 50%);
+        }
+        .auth-card {
+            background: white;
+            padding: 4rem;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            border: 3px solid #ffd700;
+        }
+        .biometric-scanner {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 1.5rem 0;
+            box-shadow: 0 10px 25px rgba(220, 53, 69, 0.3);
+        }
+        .geo-lock {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        .sidebar {
+            background: linear-gradient(135deg, #0d1421 0%, #1e3c72 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+        }
+        .sidebar .nav-link {
+            color: #e8ecf1;
+            padding: 1.5rem 2rem;
+            margin-bottom: 0.5rem;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border-left: 5px solid transparent;
+            position: relative;
+        }
+        .sidebar .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: #ffd700;
+            transform: translateX(5px);
+        }
+        .sidebar .nav-link.active {
+            background: rgba(255,215,0,0.2);
+            color: white;
+            border-left-color: #ffd700;
+        }
+        .main-content {
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .executive-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border-left: 6px solid #ffd700;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .executive-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .metric-card:hover {
+            transform: scale(1.05);
+        }
+        .metric-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .metric-label {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+        .admin-console {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(220, 53, 69, 0.3);
+        }
+        .emergency-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .emergency-btn {
+            padding: 2rem;
+            border-radius: 15px;
+            border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .emergency-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        .ai-briefings {
+            background: linear-gradient(135deg, #6f42c1 0%, #495057 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+        .legal-monitor {
+            background: linear-gradient(135deg, #fd7e14 0%, #e55a4e 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+        .treasury-monitor {
+            background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+        .security-classification {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .dual-approval {
+            background: #6c757d;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0.8;
+            font-size: 0.8rem;
+            color: #6c757d;
+            background: rgba(255,255,255,0.9);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        .smart-token {
+            background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .access-trail {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 1rem;
+            border: 2px solid #dee2e6;
+        }
+        .trail-entry {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .trail-entry:last-child {
+            border-bottom: none;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .status-secure { background: #28a745; }
+        .status-warning { background: #ffc107; }
+        .status-critical { background: #dc3545; }
+        .freeze-system {
+            background: linear-gradient(135deg, #dc3545 0%, #721c24 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            margin: 2rem 0;
+            border: 3px solid #fff;
+            box-shadow: 0 0 30px rgba(220, 53, 69, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Section -->
+    <div id="auth-section" class="auth-section">
+        <div class="auth-card">
+            <div class="security-classification">TOP SECRET</div>
+            <div class="text-center mb-4">
+                <div class="executive-logo mb-3">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <h2 class="text-primary">IEBC Board & Executive Dashboard</h2>
+                <p class="text-muted">Top-Tier Oversight & Executive Decision Making</p>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>RESTRICTED:</strong> Commissioners and Authorized Personnel Only
+                </div>
+            </div>
+            
+            <form id="executive-login-form">
+                <div class="mb-3">
+                    <label for="commissioner-id" class="form-label">Commissioner ID</label>
+                    <input type="text" id="commissioner-id" class="form-control" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="executive-password" class="form-label">Executive Password</label>
+                    <input type="password" id="executive-password" class="form-control" required>
+                </div>
+                
+                <div class="biometric-scanner mb-3">
+                    <i class="fas fa-fingerprint" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                    <h5>Biometric Authentication</h5>
+                    <p>Advanced multi-factor biometric verification required</p>
+                    <button type="button" class="btn btn-light me-2" onclick="scanFingerprint()">
+                        <i class="fas fa-fingerprint me-2"></i>Fingerprint
+                    </button>
+                    <button type="button" class="btn btn-light me-2" onclick="scanRetina()">
+                        <i class="fas fa-eye me-2"></i>Retina
+                    </button>
+                    <button type="button" class="btn btn-light" onclick="scanVoice()">
+                        <i class="fas fa-microphone me-2"></i>Voice
+                    </button>
+                    <div id="biometric-status" class="mt-3" style="display: none;">
+                        <div class="progress">
+                            <div class="progress-bar bg-success" id="biometric-progress" style="width: 0%"></div>
+                        </div>
+                        <small id="biometric-text">Verification in progress...</small>
+                    </div>
+                </div>
+                
+                <div class="smart-token mb-3">
+                    <h6><i class="fas fa-key me-2"></i>Smart Token Authentication</h6>
+                    <p class="mb-2">Insert your hardware security token</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="smart-token" required>
+                        <label class="form-check-label" for="smart-token">
+                            Smart token detected and verified
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="geo-lock mb-3">
+                    <h6><i class="fas fa-map-marker-alt me-2"></i>Geo-Location Verification</h6>
+                    <p class="mb-2">Access restricted to IEBC HQ building only</p>
+                    <button type="button" class="btn btn-light" onclick="verifyLocation()">
+                        <i class="fas fa-location-arrow me-2"></i>Verify Location
+                    </button>
+                    <div id="location-status" class="mt-2" style="display: none;">
+                        <span class="badge bg-success">Location Verified: IEBC HQ</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-danger w-100 btn-lg">
+                    <i class="fas fa-shield-alt me-2"></i>Executive Access
+                </button>
+            </form>
+            
+            <div class="access-trail">
+                <h6><i class="fas fa-history me-2"></i>Access Trail (Off-site Storage)</h6>
+                <div class="trail-entry">
+                    <span>Biometric verification active</span>
+                    <span class="badge bg-success">Secure</span>
+                </div>
+                <div class="trail-entry">
+                    <span>Session watermarking enabled</span>
+                    <span class="badge bg-info">Active</span>
+                </div>
+                <div class="trail-entry">
+                    <span>Emergency freeze capability</span>
+                    <span class="badge bg-warning">Standby</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Dashboard -->
+    <div id="main-dashboard" class="d-none">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-2 sidebar">
+                    <div class="text-center mb-4">
+                        <div class="executive-logo">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h4 class="text-white mt-2">Executive</h4>
+                        <p class="text-light">Board Dashboard</p>
+                    </div>
+                    
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#nationwide" data-section="nationwide">
+                            <i class="fas fa-globe-africa me-2"></i>Nationwide Analytics
+                        </a>
+                        <a class="nav-link" href="#fraud-risk" data-section="fraud-risk">
+                            <i class="fas fa-shield-alt me-2"></i>Fraud & Risk
+                        </a>
+                        <a class="nav-link" href="#legal-overview" data-section="legal-overview">
+                            <i class="fas fa-gavel me-2"></i>Legal Overview
+                        </a>
+                        <a class="nav-link" href="#system-performance" data-section="system-performance">
+                            <i class="fas fa-server me-2"></i>System Performance
+                        </a>
+                        <a class="nav-link" href="#observer-feedback" data-section="observer-feedback">
+                            <i class="fas fa-users me-2"></i>Observer Feedback
+                        </a>
+                        <a class="nav-link" href="#admin-console" data-section="admin-console">
+                            <i class="fas fa-cogs me-2"></i>Admin Console
+                        </a>
+                        <a class="nav-link" href="#ai-briefings" data-section="ai-briefings">
+                            <i class="fas fa-brain me-2"></i>AI Briefings
+                        </a>
+                    </nav>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="col-md-10 main-content">
+                    <div class="executive-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1><i class="fas fa-crown me-2"></i>IEBC Board & Executive Dashboard</h1>
+                                <p class="mb-0">Strategic Oversight & Executive Decision Making</p>
+                            </div>
+                            <div class="text-end">
+                                <div class="badge bg-danger mb-2">EXECUTIVE SESSION</div>
+                                <div>
+                                    <small>Commissioner: <span id="commissioner-name">Hon. Wafula Chebukati</span></small><br>
+                                    <small>Clearance: <span id="security-clearance">TOP SECRET</span></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Nationwide Analytics Section -->
+                    <div id="nationwide" class="section active">
+                        <div class="analytics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value" id="national-turnout">67.8%</div>
+                                <div class="metric-label">National Turnout</div>
+                            </div>
+                            <div class="metric-card bg-success">
+                                <div class="metric-value" id="active-stations">1,247</div>
+                                <div class="metric-label">Active Stations</div>
+                            </div>
+                            <div class="metric-card bg-warning">
+                                <div class="metric-value" id="delayed-stations">23</div>
+                                <div class="metric-label">Delayed Stations</div>
+                            </div>
+                            <div class="metric-card bg-info">
+                                <div class="metric-value" id="sync-status">98.2%</div>
+                                <div class="metric-label">Device Sync Status</div>
+                            </div>
+                        </div>
+                        
+                        <div class="executive-card">
+                            <h4><i class="fas fa-map-marked-alt me-2"></i>Turnout by Region</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <canvas id="turnoutMap" width="400" height="300"></canvas>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Region</th>
+                                                    <th>Registered Voters</th>
+                                                    <th>Votes Cast</th>
+                                                    <th>Turnout %</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Nairobi</td>
+                                                    <td>2,397,193</td>
+                                                    <td>1,647,234</td>
+                                                    <td>68.7%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Central</td>
+                                                    <td>1,892,456</td>
+                                                    <td>1,324,567</td>
+                                                    <td>70.0%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Coast</td>
+                                                    <td>1,456,789</td>
+                                                    <td>987,543</td>
+                                                    <td>67.8%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Western</td>
+                                                    <td>1,234,567</td>
+                                                    <td>864,321</td>
+                                                    <td>70.0%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="executive-card">
+                            <h4><i class="fas fa-chart-line me-2"></i>Voting Trends & Predictions</h4>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="metric-card bg-primary">
+                                        <div class="metric-value">72%</div>
+                                        <div class="metric-label">Predicted Final Turnout</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card bg-success">
+                                        <div class="metric-value">6 hrs</div>
+                                        <div class="metric-label">Est. Completion Time</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card bg-info">
+                                        <div class="metric-value">94.5%</div>
+                                        <div class="metric-label">System Reliability</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fraud & Risk Monitoring Section -->
+                    <div id="fraud-risk" class="section d-none">
+                        <div class="executive-card">
+                            <h4><i class="fas fa-shield-alt me-2"></i>Real-time Fraud & Risk Monitoring</h4>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-danger">
+                                        <div class="metric-value" id="ai-alerts">7</div>
+                                        <div class="metric-label">AI Engine Alerts</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-warning">
+                                        <div class="metric-value" id="flagged-stations">12</div>
+                                        <div class="metric-label">Flagged Stations</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-info">
+                                        <div class="metric-value" id="override-logs">3</div>
+                                        <div class="metric-label">Override Logs</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-success">
+                                        <div class="metric-value" id="security-score">87%</div>
+                                        <div class="metric-label">Security Score</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h5>Critical Fraud Alerts</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Time</th>
+                                                <th>Location</th>
+                                                <th>Alert Type</th>
+                                                <th>Risk Level</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>14:32</td>
+                                                <td>Embakasi East</td>
+                                                <td>Irregular Pattern Detected</td>
+                                                <td><span class="badge bg-danger">Critical</span></td>
+                                                <td>Under Investigation</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-danger">Investigate</button>
+                                                    <button class="btn btn-sm btn-outline-warning">Override</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>13:45</td>
+                                                <td>Kibera</td>
+                                                <td>Device Tampering</td>
+                                                <td><span class="badge bg-warning">High</span></td>
+                                                <td>Resolved</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Legal Overview Section -->
+                    <div id="legal-overview" class="section d-none">
+                        <div class="legal-monitor">
+                            <h4><i class="fas fa-gavel me-2"></i>Legal & Petition Overview</h4>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-warning">
+                                        <div class="metric-value">8</div>
+                                        <div class="metric-label">Legal Disputes Filed</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-info">
+                                        <div class="metric-value">92%</div>
+                                        <div class="metric-label">Form 34 Upload Rate</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-success">
+                                        <div class="metric-value">78%</div>
+                                        <div class="metric-label">Form 35 Upload Rate</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-primary">
+                                        <div class="metric-value">15</div>
+                                        <div class="metric-label">Observer Reports</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="executive-card">
+                            <h5>Active Legal Cases by County</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>County</th>
+                                            <th>Case Type</th>
+                                            <th>Filing Party</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Nairobi</td>
+                                            <td>Results Dispute</td>
+                                            <td>Opposition Coalition</td>
+                                            <td>Under Review</td>
+                                            <td><span class="badge bg-danger">High</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                                <button class="btn btn-sm btn-outline-warning">Escalate</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mombasa</td>
+                                            <td>Procedural Violation</td>
+                                            <td>Civil Society</td>
+                                            <td>Investigating</td>
+                                            <td><span class="badge bg-warning">Medium</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View Details</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- System Performance Section -->
+                    <div id="system-performance" class="section d-none">
+                        <div class="executive-card">
+                            <h4><i class="fas fa-server me-2"></i>System Performance Logs</h4>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="metric-card bg-success">
+                                        <div class="metric-value">99.7%</div>
+                                        <div class="metric-label">Server Uptime</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card bg-warning">
+                                        <div class="metric-value">2</div>
+                                        <div class="metric-label">Downtime Events</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card bg-info">
+                                        <div class="metric-value">847ms</div>
+                                        <div class="metric-label">Avg Response Time</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h5>Critical System Events</h5>
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>14:23:</strong> Brief connectivity loss in Turkana region - Restored
+                                </div>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>13:45:</strong> Backup server synchronization completed successfully
+                                </div>
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>12:30:</strong> All systems operational - Performance optimal
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Observer Feedback Section -->
+                    <div id="observer-feedback" class="section d-none">
+                        <div class="executive-card">
+                            <h4><i class="fas fa-users me-2"></i>Observer Feedback Summary</h4>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Organization</th>
+                                                    <th>Region</th>
+                                                    <th>Report Status</th>
+                                                    <th>Key Findings</th>
+                                                    <th>Overall Rating</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>EU Observer Mission</td>
+                                                    <td>Nationwide</td>
+                                                    <td><span class="badge bg-success">Submitted</span></td>
+                                                    <td>Process largely credible</td>
+                                                    <td><span class="badge bg-success">Positive</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>African Union</td>
+                                                    <td>Central Region</td>
+                                                    <td><span class="badge bg-warning">Pending</span></td>
+                                                    <td>Minor procedural concerns</td>
+                                                    <td><span class="badge bg-warning">Neutral</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Commonwealth</td>
+                                                    <td>Coast Region</td>
+                                                    <td><span class="badge bg-success">Submitted</span></td>
+                                                    <td>Transparent process</td>
+                                                    <td><span class="badge bg-success">Positive</span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card bg-primary">
+                                        <div class="metric-value">87%</div>
+                                        <div class="metric-label">Positive Feedback</div>
+                                    </div>
+                                    <div class="metric-card bg-warning">
+                                        <div class="metric-value">12</div>
+                                        <div class="metric-label">Areas for Improvement</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin Console Section -->
+                    <div id="admin-console" class="section d-none">
+                        <div class="admin-console">
+                            <h4><i class="fas fa-cogs me-2"></i>Admin Command Console</h4>
+                            <p>Emergency interventions and system-wide controls</p>
+                            
+                            <div class="dual-approval mb-4">
+                                <h6><i class="fas fa-users me-2"></i>Dual-Approval Mechanism</h6>
+                                <p class="mb-0">Critical actions require approval from two commissioners</p>
+                            </div>
+                            
+                            <div class="emergency-controls">
+                                <button class="emergency-btn btn-warning" onclick="suspendUser()">
+                                    <i class="fas fa-user-slash me-2"></i>Suspend User
+                                </button>
+                                <button class="emergency-btn btn-danger" onclick="forceBallotRecall()">
+                                    <i class="fas fa-undo me-2"></i>Force Ballot Recall
+                                </button>
+                                <button class="emergency-btn btn-info" onclick="overrideResult()">
+                                    <i class="fas fa-edit me-2"></i>Override Result
+                                </button>
+                                <button class="emergency-btn btn-secondary" onclick="lockConstituency()">
+                                    <i class="fas fa-lock me-2"></i>Lock Constituency
+                                </button>
+                                <button class="emergency-btn btn-primary" onclick="generateReport()">
+                                    <i class="fas fa-file-alt me-2"></i>Generate Report
+                                </button>
+                                <button class="emergency-btn btn-success" onclick="certifyResults()">
+                                    <i class="fas fa-certificate me-2"></i>Certify Results
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="freeze-system">
+                            <h4><i class="fas fa-stop-circle me-2"></i>EMERGENCY SYSTEM FREEZE</h4>
+                            <p>Immediately halt all election operations nationwide</p>
+                            <button class="btn btn-outline-light btn-lg" onclick="emergencyFreeze()">
+                                <i class="fas fa-exclamation-triangle me-2"></i>INITIATE FREEZE
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Briefings Section -->
+                    <div id="ai-briefings" class="section d-none">
+                        <div class="ai-briefings">
+                            <h4><i class="fas fa-brain me-2"></i>AI Intelligence Briefings</h4>
+                            <p>Advanced analytics and predictive insights</p>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="metric-card bg-info">
+                                        <div class="metric-value">94.7%</div>
+                                        <div class="metric-label">Prediction Accuracy</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="metric-card bg-warning">
+                                        <div class="metric-value">3</div>
+                                        <div class="metric-label">Pattern Alerts</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="executive-card">
+                            <h5><i class="fas fa-chart-line me-2"></i>Voter Behavior Predictions</h5>
+                            <div class="alert alert-info">
+                                <h6>Predictive Model Output:</h6>
+                                <ul class="mb-0">
+                                    <li>Expected final turnout: 72.3% ±1.2%</li>
+                                    <li>Peak voting hours: 10:00-14:00</li>
+                                    <li>Potential queue buildups in 15 stations</li>
+                                    <li>Weather impact: Minimal (85% confidence)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="executive-card">
+                            <h5><i class="fas fa-exclamation-triangle me-2"></i>Fraud Pattern Alerts</h5>
+                            <div class="alert alert-warning">
+                                <h6>AI Anomaly Detection:</h6>
+                                <ul class="mb-0">
+                                    <li>Irregular voting patterns detected in 3 constituencies</li>
+                                    <li>Suspicious device activity in Mombasa region</li>
+                                    <li>Unusual ballot request volumes in 2 stations</li>
+                                    <li>Potential coordinated voting detected (low confidence)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="treasury-monitor">
+                            <h5><i class="fas fa-money-bill-wave me-2"></i>Treasury Monitor (Optional)</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="metric-card">
+                                        <div class="metric-value">89.4%</div>
+                                        <div class="metric-label">Funds Disbursed</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card bg-warning">
+                                        <div class="metric-value">12</div>
+                                        <div class="metric-label">Budget Overruns</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="metric-card bg-success">
+                                        <div class="metric-value">KSh 2.3B</div>
+                                        <div class="metric-label">Remaining Budget</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Session Watermark -->
+    <div class="watermark">
+        <div><strong>EXECUTIVE SESSION</strong></div>
+        <div>Session: <span id="session-id">EXEC-2024-001</span></div>
+        <div>Commissioner: <span id="watermark-commissioner">Hon. Chebukati</span></div>
+        <div>Clearance: <span id="watermark-clearance">TOP SECRET</span></div>
+        <div>Location: IEBC HQ Verified</div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="board-executive.js"></script>
+</body>
+</html>
