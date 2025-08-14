@@ -171,6 +171,89 @@ app.post('/api/executive/emergency', authenticateToken, requireRole(['executive'
   res.json({ success: true, action, timestamp: new Date().toISOString() });
 });
 
+// Judiciary/Electoral Tribunal endpoints
+app.get('/api/judiciary/constituencies/:county', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { county } = req.params;
+  res.json(getConstituenciesByCounty(county));
+});
+
+app.get('/api/judiciary/wards/:constituency', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { constituency } = req.params;
+  res.json(getWardsByConstituency(constituency));
+});
+
+app.get('/api/judiciary/metrics/:constituency', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { constituency } = req.params;
+  res.json(getConstituencyMetrics(constituency));
+});
+
+app.get('/api/judiciary/polling-stations/:constituency', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { constituency } = req.params;
+  res.json(getPollingStationsForJudiciary(constituency));
+});
+
+app.get('/api/judiciary/audit-logs', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { dateRange, actionType, constituency } = req.query;
+  res.json(getJudiciaryAuditLogs(dateRange, actionType, constituency));
+});
+
+app.post('/api/judiciary/voter-history', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { voterId, caseNumber, constituency } = req.body;
+  
+  // Validate court order/case number
+  if (!caseNumber || !voterId) {
+    return res.status(400).json({ error: 'Case number and voter ID required' });
+  }
+  
+  const voterHistory = getVoterHistoryForJudiciary(voterId, caseNumber, constituency);
+  res.json(voterHistory);
+});
+
+app.get('/api/judiciary/forms/:constituency', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { constituency } = req.params;
+  res.json(getFormsForJudiciary(constituency));
+});
+
+app.get('/api/judiciary/discrepancies/:constituency', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { constituency } = req.params;
+  res.json(getDiscrepanciesForJudiciary(constituency));
+});
+
+app.post('/api/judiciary/run-analysis', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { constituency, analysisType } = req.body;
+  
+  // Log judiciary analysis request
+  logJudiciaryAction(req.user.id, 'discrepancy_analysis', `Ran ${analysisType} analysis for ${constituency}`);
+  
+  const analysisResults = runJudiciaryAnalysis(constituency, analysisType);
+  res.json(analysisResults);
+});
+
+app.post('/api/judiciary/export-report', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const { reportType, constituency, dateRange, format } = req.body;
+  
+  // Log judiciary report export
+  logJudiciaryAction(req.user.id, 'report_export', `Exported ${reportType} report for ${constituency}`);
+  
+  const reportData = generateJudiciaryReport(reportType, constituency, dateRange, format);
+  res.json(reportData);
+});
+
+app.post('/api/judiciary/audit-log', authenticateToken, requireRole(['judiciary']), (req, res) => {
+  const auditLog = {
+    ...req.body,
+    timestamp: new Date().toISOString(),
+    judiciaryUser: req.user.id,
+    ipAddress: req.ip,
+    userAgent: req.get('User-Agent')
+  };
+  
+  // Store judiciary audit log
+  storeJudiciaryAuditLog(auditLog);
+  
+  res.json({ success: true, logId: auditLog.id });
+});
+
 // Real-time updates via WebSocket
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
@@ -185,6 +268,11 @@ io.on('connection', (socket) => {
   
   socket.on('join-executive', () => {
     socket.join('executive-board');
+  });
+  
+  socket.on('join-judiciary', (data) => {
+    socket.join('judiciary-portal');
+    console.log(`Judiciary user ${data.userId} joined judiciary portal`);
   });
   
   socket.on('disconnect', () => {
@@ -220,6 +308,14 @@ async function validateUser(nationalId, password, biometricData, otp) {
       name: 'IEBC Commissioner',
       role: 'executive',
       permissions: ['full_access', 'emergency_controls', 'final_approval']
+    },
+    'judiciary001': {
+      id: 'judiciary001',
+      name: 'Hon. Justice Sarah Wanjiku',
+      role: 'judiciary',
+      court: 'Supreme Court of Kenya',
+      caseNumber: 'PETITION NO. 1 OF 2024',
+      permissions: ['read_only', 'audit_access', 'form_verification', 'report_export']
     }
   };
   
@@ -289,6 +385,192 @@ function executeEmergencyAction(action, reason, userId) {
   // In production, implement actual emergency controls
 }
 
+// Judiciary Helper Functions
+function getConstituenciesByCounty(county) {
+  const constituencies = {
+    'nairobi': [
+      { value: 'westlands', name: 'Westlands' },
+      { value: 'dagoretti', name: 'Dagoretti' },
+      { value: 'langata', name: 'Langata' },
+      { value: 'kibra', name: 'Kibra' }
+    ],
+    'mombasa': [
+      { value: 'mvita', name: 'Mvita' },
+      { value: 'changamwe', name: 'Changamwe' },
+      { value: 'jomvu', name: 'Jomvu' }
+    ]
+  };
+  return constituencies[county] || [];
+}
+
+function getWardsByConstituency(constituency) {
+  const wards = {
+    'westlands': [
+      { value: 'westlands', name: 'Westlands' },
+      { value: 'parklands', name: 'Parklands' },
+      { value: 'lavington', name: 'Lavington' }
+    ],
+    'mvita': [
+      { value: 'mvita', name: 'Mvita' },
+      { value: 'tudor', name: 'Tudor' }
+    ]
+  };
+  return wards[constituency] || [];
+}
+
+function getConstituencyMetrics(constituency) {
+  const metrics = {
+    'westlands': { totalVoters: 45000, castVotes: 38000, turnout: 84.4, pollingStations: 15 },
+    'mvita': { totalVoters: 32000, castVotes: 26800, turnout: 83.8, pollingStations: 12 }
+  };
+  return metrics[constituency] || { totalVoters: 0, castVotes: 0, turnout: 0, pollingStations: 0 };
+}
+
+function getPollingStationsForJudiciary(constituency) {
+  const stations = {
+    'westlands': [
+      {
+        id: 'PS001',
+        name: 'Westlands Primary School',
+        address: 'Westlands, Nairobi',
+        status: 'active',
+        totalVoters: 2500,
+        castVotes: 1800,
+        turnout: 72.0,
+        lastSync: '2024-08-09T14:30:00.000Z'
+      },
+      {
+        id: 'PS002',
+        name: 'Parklands High School',
+        address: 'Parklands, Nairobi',
+        status: 'active',
+        totalVoters: 1800,
+        castVotes: 1350,
+        turnout: 75.0,
+        lastSync: '2024-08-09T14:25:00.000Z'
+      }
+    ]
+  };
+  return stations[constituency] || [];
+}
+
+function getJudiciaryAuditLogs(dateRange, actionType, constituency) {
+  // Mock judiciary audit logs
+  return [
+    {
+      id: 'AUD001',
+      timestamp: '2024-08-09T08:00:00.000Z',
+      user: 'judiciary001',
+      action: 'login',
+      details: 'Judiciary user logged in via biometric authentication',
+      constituency: constituency
+    },
+    {
+      id: 'AUD002',
+      timestamp: '2024-08-09T08:05:00.000Z',
+      user: 'judiciary001',
+      action: 'data_access',
+      details: `Accessed ${constituency} Constituency data`,
+      constituency: constituency
+    }
+  ];
+}
+
+function getVoterHistoryForJudiciary(voterId, caseNumber, constituency) {
+  // Mock voter history for judiciary
+  return [
+    {
+      id: voterId,
+      name: 'John Doe',
+      registrationLocation: 'Westlands Primary School',
+      voteStatus: 'cast',
+      votingTime: '2024-08-09T10:30:00.000Z',
+      objections: [],
+      caseNumber: caseNumber,
+      constituency: constituency
+    }
+  ];
+}
+
+function getFormsForJudiciary(constituency) {
+  const forms = {
+    'westlands': [
+      {
+        id: 'FORM001',
+        type: '34A',
+        stationName: 'Westlands Primary School',
+        uploadTime: '2024-08-09T17:30:00.000Z',
+        clerkId: 'CLK001',
+        clerkName: 'Alice Wanjiku',
+        deviceId: 'TAB001',
+        totalVotes: 1800,
+        validVotes: 1780,
+        rejectedVotes: 20,
+        status: 'active'
+      }
+    ]
+  };
+  return forms[constituency] || [];
+}
+
+function getDiscrepanciesForJudiciary(constituency) {
+  const discrepancies = {
+    'westlands': [
+      {
+        type: 'vote_count_mismatch',
+        priority: 'high',
+        description: 'Discrepancy detected in Form 34B from Parklands High School - vote count mismatch of 15 votes',
+        station: 'Parklands High School',
+        formId: 'FORM002'
+      }
+    ]
+  };
+  return discrepancies[constituency] || [];
+}
+
+function runJudiciaryAnalysis(constituency, analysisType) {
+  // Mock AI analysis for judiciary
+  return {
+    constituency: constituency,
+    analysisType: analysisType,
+    timestamp: new Date().toISOString(),
+    findings: [
+      {
+        type: 'vote_count_mismatch',
+        priority: 'high',
+        description: 'Discrepancy detected in vote counting',
+        recommendation: 'Manual recount recommended'
+      }
+    ],
+    confidence: 0.95
+  };
+}
+
+function generateJudiciaryReport(reportType, constituency, dateRange, format) {
+  // Mock report generation for judiciary
+  return {
+    reportId: 'REP-' + Date.now(),
+    reportType: reportType,
+    constituency: constituency,
+    dateRange: dateRange,
+    format: format,
+    generatedAt: new Date().toISOString(),
+    downloadUrl: `/reports/judiciary/${reportType}-${constituency}.pdf`,
+    blockchainId: 'BLOCK-' + Math.random().toString(36).substr(2, 9),
+    hashSignature: 'SHA256-' + Math.random().toString(36).substr(2, 9)
+  };
+}
+
+function logJudiciaryAction(userId, action, details) {
+  console.log(`Judiciary action logged: ${action} by ${userId} - ${details}`);
+  // In production, store in database
+}
+
+function storeJudiciaryAuditLog(auditLog) {
+  console.log('Judiciary audit log stored:', auditLog);
+  // In production, store in database
+}
+
 // Use JSON Server for data operations
 app.use('/api/data', middlewares, router);
 
@@ -300,4 +582,5 @@ server.listen(port, () => {
   console.log(`Regional Admin: http://localhost:${port}/regional-admin-portal.html`);
   console.log(`Bomas HQ: http://localhost:${port}/bomas-hq-portal.html`);
   console.log(`Executive Board: http://localhost:${port}/board-executive-portal.html`);
+  console.log(`Judiciary Portal: http://localhost:${port}/judiciary-portal.html`);
 });
