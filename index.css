@@ -1,6 +1,6 @@
 /* IEBC Official Color Scheme - White and Lime Green */
 :root {
-    --iebc-primary: #32CD32;     /* Lime Green - Primary IEBC color */
+    --iebc-primary: #00FF7F;     /* Vibrant Lime Green - Primary IEBC color from logo */
     --iebc-secondary: #228B22;   /* Forest Green - Darker shade */
     --iebc-accent: #90EE90;      /* Light Green - Accent */
     --iebc-white: #FFFFFF;       /* Pure White */
