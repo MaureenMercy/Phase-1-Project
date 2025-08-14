@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IEBC - Legal & Compliance Access | Judiciary Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2d3748;
+            --accent-color: #e53e3e;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .main-container {
+            padding: 2rem 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .dashboard-header {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .dashboard-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .access-badge {
+            background: linear-gradient(45deg, var(--accent-color), #c53030);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .constituency-selector {
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(26, 54, 93, 0.25);
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .table {
+            margin: 0;
+        }
+
+        .table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 1rem;
+        }
+
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--light-bg);
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active { background: #c6f6d5; color: #22543d; }
+        .status-pending { background: #fef5e7; color: #744210; }
+        .status-resolved { background: #e6fffa; color: #234e52; }
+        .status-critical { background: #fed7d7; color: #742a2a; }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .audit-timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .audit-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .audit-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .audit-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .audit-time {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .audit-action {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .audit-details {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .form-verification {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .form-card {
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .form-type {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .form-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .discrepancy-analyzer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .ai-insights {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .insight-high { background: rgba(220, 38, 38, 0.8); }
+        .insight-medium { background: rgba(217, 119, 6, 0.8); }
+        .insight-low { background: rgba(34, 197, 94, 0.8); }
+
+        .export-section {
+            background: linear-gradient(135deg, var(--success-color) 0%, #2f855a 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .export-btn {
+            background: white;
+            color: var(--success-color);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .security-notice {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #b7791f 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .session-info {
+            background: var(--light-bg);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .session-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .session-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .session-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .session-value {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem 0;
+            }
+            
+            .dashboard-header {
+                padding: 1.5rem;
+            }
+            
+            .section-card {
+                padding: 1rem;
+            }
+            
+            .metric-value {
+                font-size: 2rem;
+            }
+            
+            .session-details {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .biometric-auth {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .biometric-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.8;
+        }
+
+        .auth-status {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .access-token {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-balance-scale me-2"></i>
+                IEBC Legal & Compliance Access
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text me-3">
+                    <i class="fas fa-user-shield me-2"></i>
+                    <span id="currentUser">Judiciary Access</span>
+                </span>
+                <button class="btn btn-outline-light btn-sm" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container main-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="dashboard-title">
+                        <i class="fas fa-gavel me-3"></i>
+                        Legal & Compliance Access Portal
+                    </h1>
+                    <p class="dashboard-subtitle">
+                        Secure, verifiable access to electoral data for legal proceedings and dispute resolution
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="access-badge">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Judiciary Access Level
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Notice -->
+        <div class="security-notice">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Security Notice:</strong> All access is logged and monitored. Data access is restricted to active legal cases only.
+        </div>
+
+        <!-- Session Information -->
+        <div class="session-info">
+            <div class="session-details">
+                <div class="session-item">
+                    <span class="session-label">Session ID:</span>
+                    <span class="session-value" id="sessionId">JUD-2024-001</span>
+                </div>
+                <div class="session-item">
+                    <span class="session-label">Access Token:</span>
+                    <span class="session-value" id="accessToken">JUD-TOKEN-2024</span>
+                </div>
+                <div class="session-item">
+                    <span class="session-label">Login Time:</span>
+                    <span class="session-value" id="loginTime">2024-08-09 08:00:00</span>
+                </div>
+                <div class="session-item">
+                    <span class="session-label">Data Expiry:</span>
+                    <span class="session-value" id="dataExpiry">Case Closure</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biometric Authentication Status -->
+        <div class="biometric-auth">
+            <div class="biometric-icon">
+                <i class="fas fa-fingerprint"></i>
+            </div>
+            <h4>Biometric Authentication Active</h4>
+            <p>Judiciary-issued access token verified and active</p>
+            <div class="auth-status">
+                <div class="row">
+                    <div class="col-md-4">
+                        <strong>Biometric:</strong> ✅ Verified
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Token:</strong> ✅ Active
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Permissions:</strong> ✅ Read-Only
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. Petitioned Constituency Access -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3 class="section-title">Petitioned Constituency Access</h3>
+            </div>
+            
+            <div class="constituency-selector">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Select County:</label>
+                        <select class="form-select" id="countySelect">
+                            <option value="">Choose County...</option>
+                            <option value="nairobi">Nairobi</option>
+                            <option value="mombasa">Mombasa</option>
+                            <option value="kisumu">Kisumu</option>
+                            <option value="nakuru">Nakuru</option>
+                            <option value="machakos">Machakos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Select Constituency:</label>
+                        <select class="form-select" id="constituencySelect">
+                            <option value="">Choose Constituency...</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Select Ward:</label>
+                        <select class="form-select" id="wardSelect">
+                            <option value="">Choose Ward...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-value" id="totalVoters">0</div>
+                        <div class="metric-label">Total Voters</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-value" id="castVotes">0</div>
+                        <div class="metric-label">Cast Votes</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-value" id="turnout">0%</div>
+                        <div class="metric-label">Turnout</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-value" id="pollingStations">0</div>
+                        <div class="metric-label">Polling Stations</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Polling Station</th>
+                            <th>Status</th>
+                            <th>Total Voters</th>
+                            <th>Cast Votes</th>
+                            <th>Turnout</th>
+                            <th>Last Sync</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pollingStationsTable">
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                Select a constituency to view polling station data
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. Audit Trail Viewer -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-icon" style="background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);">
+                    <i class="fas fa-history"></i>
+                </div>
+                <h3 class="section-title">Audit Trail Viewer</h3>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Date Range:</label>
+                    <select class="form-select" id="dateRange">
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Action Type:</label>
+                    <select class="form-select" id="actionType">
+                        <option value="all">All Actions</option>
+                        <option value="login">Login/Logout</option>
+                        <option value="vote">Vote Casting</option>
+                        <option value="sync">Data Sync</option>
+                        <option value="form">Form Upload</option>
+                        <option value="incident">Incident Report</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="audit-timeline" id="auditTimeline">
+                <div class="audit-item">
+                    <div class="audit-time">2024-08-09 08:00:00</div>
+                    <div class="audit-action">System Access</div>
+                    <div class="audit-details">Judiciary user logged in via biometric authentication</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2024-08-09 08:05:00</div>
+                    <div class="audit-action">Data Access</div>
+                    <div class="audit-details">Accessed Nairobi County voter registration data</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2024-08-09 08:10:00</div>
+                    <div class="audit-action">Form Review</div>
+                    <div class="audit-details">Reviewed Form 34A from Westlands Primary School</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Voter History Lookup -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-icon" style="background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);">
+                    <i class="fas fa-user-search"></i>
+                </div>
+                <h3 class="section-title">Voter History Lookup</h3>
+            </div>
+            
+            <div class="alert alert-warning" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>Court Order Required:</strong> Voter history lookup requires a valid court order or case number.
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Case Number:</label>
+                    <input type="text" class="form-control" id="caseNumber" placeholder="Enter court case number">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Voter ID/National ID:</label>
+                    <input type="text" class="form-control" id="voterId" placeholder="Enter voter ID or national ID">
+                </div>
+            </div>
+
+            <div class="text-center mb-3">
+                <button class="btn btn-primary btn-lg" onclick="searchVoterHistory()">
+                    <i class="fas fa-search me-2"></i>
+                    Search Voter History
+                </button>
+            </div>
+
+            <div id="voterHistoryResults" style="display: none;">
+                <div class="data-table">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Voter ID</th>
+                                <th>Name</th>
+                                <th>Registration Location</th>
+                                <th>Vote Status</th>
+                                <th>Voting Time</th>
+                                <th>Objections</th>
+                            </tr>
+                        </thead>
+                        <tbody id="voterHistoryTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Form Verification Hub -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-icon" style="background: linear-gradient(135deg, #d69e2e 0%, #b7791f 100%);">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3 class="section-title">Form Verification Hub</h3>
+            </div>
+            
+            <div class="form-verification" id="formVerification">
+                <div class="form-card">
+                    <div class="form-header">
+                        <span class="form-type">Form 34A</span>
+                        <span class="form-status status-active">Verified</span>
+                    </div>
+                    <h6>Westlands Primary School</h6>
+                    <p><strong>Uploaded:</strong> 2024-08-09 17:30:00</p>
+                    <p><strong>Clerk ID:</strong> CLK001 (Alice Wanjiku)</p>
+                    <p><strong>Device ID:</strong> TAB001</p>
+                    <p><strong>Total Votes:</strong> 1,800</p>
+                    <p><strong>Valid Votes:</strong> 1,780</p>
+                    <p><strong>Rejected:</strong> 20</p>
+                    <div class="mt-3">
+                        <button class="btn btn-sm btn-outline-primary me-2">
+                            <i class="fas fa-eye me-1"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-download me-1"></i> Download
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-header">
+                        <span class="form-type">Form 34B</span>
+                        <span class="form-status status-pending">Pending</span>
+                    </div>
+                    <h6>Parklands High School</h6>
+                    <p><strong>Uploaded:</strong> 2024-08-09 17:45:00</p>
+                    <p><strong>Clerk ID:</strong> CLK004 (John Mwangi)</p>
+                    <p><strong>Device ID:</strong> TAB002</p>
+                    <p><strong>Total Votes:</strong> 1,350</p>
+                    <p><strong>Valid Votes:</strong> 1,320</p>
+                    <p><strong>Rejected:</strong> 30</p>
+                    <div class="mt-3">
+                        <button class="btn btn-sm btn-outline-primary me-2">
+                            <i class="fas fa-eye me-1"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning">
+                            <i class="fas fa-exclamation-triangle me-1"></i> Flag
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="form-header">
+                        <span class="form-type">Form 34C</span>
+                        <span class="form-status status-resolved">Processed</span>
+                    </div>
+                    <h6>Lavington Mall</h6>
+                    <p><strong>Uploaded:</strong> 2024-08-09 18:00:00</p>
+                    <p><strong>Clerk ID:</strong> CLK007 (Mary Njeri)</p>
+                    <p><strong>Device ID:</strong> TAB003</p>
+                    <p><strong>Total Votes:</strong> 950</p>
+                    <p><strong>Valid Votes:</strong> 930</p>
+                    <p><strong>Rejected:</strong> 20</p>
+                    <div class="mt-3">
+                        <button class="btn btn-sm btn-outline-primary me-2">
+                            <i class="fas fa-eye me-1"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-check me-1"></i> Verified
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Discrepancy Analyzer -->
+        <div class="discrepancy-analyzer">
+            <div class="section-header">
+                <div class="section-icon" style="background: rgba(255, 255, 255, 0.2);">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="section-title">AI-Powered Discrepancy Analyzer</h3>
+            </div>
+            
+            <p>Advanced AI analysis to detect potential manipulation, errors, and anomalies in electoral data</p>
+            
+            <div class="ai-insights">
+                <h5><i class="fas fa-lightbulb me-2"></i>AI Insights & Recommendations</h5>
+                
+                <div class="insight-item">
+                    <div class="insight-icon insight-high">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                        <strong>High Priority:</strong> Discrepancy detected in Form 34B from Parklands High School - vote count mismatch of 15 votes
+                    </div>
+                </div>
+                
+                <div class="insight-item">
+                    <div class="insight-icon insight-medium">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <strong>Medium Priority:</strong> Delayed syncing detected in 3 polling stations - average delay of 45 minutes
+                    </div>
+                </div>
+                
+                <div class="insight-item">
+                    <div class="insight-icon insight-low">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div>
+                        <strong>Low Priority:</strong> Minor biometric verification delays in 2 stations - within acceptable parameters
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-light btn-lg" onclick="runDiscrepancyAnalysis()">
+                    <i class="fas fa-play me-2"></i>
+                    Run Full Analysis
+                </button>
+                <button class="btn btn-light btn-lg ms-3" onclick="generateDiscrepancyReport()">
+                    <i class="fas fa-file-alt me-2"></i>
+                    Generate Report
+                </button>
+            </div>
+        </div>
+
+        <!-- 6. Secure Report Export -->
+        <div class="export-section">
+            <div class="section-header">
+                <div class="section-icon" style="background: rgba(255, 255, 255, 0.2);">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3 class="section-title">Secure Report Export</h3>
+            </div>
+            
+            <p>Generate court-presentable digital reports with blockchain-sealed integrity and timestamps</p>
+            
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <button class="export-btn" onclick="exportAuditLogs()">
+                        <i class="fas fa-history me-2"></i>
+                        Audit Logs
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button class="export-btn" onclick="exportVoteLogs()">
+                        <i class="fas fa-vote-yea me-2"></i>
+                        Vote Logs
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button class="export-btn" onclick="exportFullReport()">
+                        <i class="fas fa-file-archive me-2"></i>
+                        Full Report Pack
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button class="export-btn" onclick="exportCustomReport()">
+                    <i class="fas fa-cogs me-2"></i>
+                    Custom Report Builder
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <small>
+                    <i class="fas fa-shield-alt me-2"></i>
+                    All reports include blockchain-sealed IDs, hash signatures, and integrity verification
+                </small>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Processing request...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="judiciary-portal.js"></script>
+</body>
+</html>
