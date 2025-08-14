@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regional IEBC Admin Panel - County/Constituency Management</title>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" rel="stylesheet">
+    <style>
+        .regional-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        .county-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .regional-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        .regional-card:hover {
+            transform: translateY(-5px);
+        }
+        .status-online { color: #28a745; }
+        .status-offline { color: #dc3545; }
+        .status-warning { color: #ffc107; }
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        .station-cell {
+            padding: 0.5rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .station-open { background: #d4edda; color: #155724; }
+        .station-closed { background: #f8d7da; color: #721c24; }
+        .station-delayed { background: #fff3cd; color: #856404; }
+        .incident-tag {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .incident-critical { background: #dc3545; color: white; }
+        .incident-moderate { background: #ffc107; color: #212529; }
+        .incident-info { background: #17a2b8; color: white; }
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .auth-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        }
+        .auth-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+        .biometric-scanner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .scanner-animation {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .sidebar {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar .nav-link {
+            color: #e8ecf1;
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            border-left-color: #e74c3c;
+            transform: translateX(5px);
+        }
+        .main-content {
+            padding: 2rem;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .form-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        .form-upload-area:hover {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+        .clerk-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #28a745;
+            transition: all 0.3s ease;
+        }
+        .clerk-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .device-status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .device-online { background: #28a745; }
+        .device-offline { background: #dc3545; }
+        .device-warning { background: #ffc107; }
+        .voter-search-box {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .voter-result {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3498db;
+        }
+        .voter-voted {
+            border-left-color: #28a745;
+        }
+        .voter-disabled {
+            border-left-color: #dc3545;
+        }
+        .analytics-chart {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .emergency-alert {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Section -->
+    <div id="auth-section" class="auth-section">
+        <div class="auth-card">
+            <div class="text-center mb-4">
+                <h2><i class="fas fa-shield-alt text-primary"></i> IEBC Regional Access</h2>
+                <p class="text-muted">County/Constituency Management Portal</p>
+            </div>
+            
+            <form id="regional-login-form">
+                <div class="mb-3">
+                    <label for="national-id" class="form-label">National ID</label>
+                    <input type="text" class="form-control" id="national-id" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                
+                <div class="biometric-scanner">
+                    <div class="scanner-animation"></div>
+                    <p class="mb-0">Place your finger on the biometric scanner</p>
+                    <small>Biometric verification required</small>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="otp" class="form-label">OTP Code</label>
+                    <input type="text" class="form-control" id="otp" placeholder="Enter 6-digit OTP" maxlength="6" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100">Access Regional Portal</button>
+            </form>
+            
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    <i class="fas fa-lock"></i> Secure access via National ID + Biometric + OTP
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="d-none">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar Navigation -->
+                <div class="col-md-3 col-lg-2 sidebar">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white"><i class="fas fa-map-marker-alt"></i> Regional Admin</h4>
+                        <div class="county-badge" id="user-county">Loading...</div>
+                    </div>
+                    
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#" data-section="overview">
+                            <i class="fas fa-tachometer-alt me-2"></i> Election Setup Overview
+                        </a>
+                        <a class="nav-link" href="#" data-section="clerks">
+                            <i class="fas fa-users me-2"></i> Clerk Deployment Manager
+                        </a>
+                        <a class="nav-link" href="#" data-section="stations">
+                            <i class="fas fa-building me-2"></i> Polling Station Monitor
+                        </a>
+                        <a class="nav-link" href="#" data-section="voters">
+                            <i class="fas fa-id-card me-2"></i> Voter Roll Verification
+                        </a>
+                        <a class="nav-link" href="#" data-section="forms">
+                            <i class="fas fa-file-alt me-2"></i> Form 34/35 Monitor
+                        </a>
+                        <a class="nav-link" href="#" data-section="incidents">
+                            <i class="fas fa-exclamation-triangle me-2"></i> Incident Logbook
+                        </a>
+                        <a class="nav-link" href="#" data-section="analytics">
+                            <i class="fas fa-chart-bar me-2"></i> County Analytics
+                        </a>
+                    </nav>
+                    
+                    <div class="mt-auto pt-4">
+                        <button class="btn btn-outline-light btn-sm w-100" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Main Content Area -->
+                <div class="col-md-9 col-lg-10 main-content">
+                    <!-- Header -->
+                    <div class="regional-header">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h2><i class="fas fa-map-marker-alt me-2"></i> Regional IEBC Admin Panel</h2>
+                                <p class="mb-0">County: <span id="header-county">Loading...</span> | Constituency: <span id="header-constituency">Loading...</span></p>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <div class="me-3">
+                                        <small>Last Sync:</small><br>
+                                        <span id="last-sync" class="status-online">Online</span>
+                                    </div>
+                                    <div class="me-3">
+                                        <small>User:</small><br>
+                                        <span id="current-user">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1. Regional Election Setup Overview -->
+                    <div id="overview" class="section active">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3><i class="fas fa-tachometer-alt me-2"></i> Regional Election Setup Overview</h3>
+                                <p class="text-muted">Manage elections for your assigned county and constituency</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="total-positions">6</div>
+                                    <div class="metric-label">Positions Available</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="approved-candidates">12</div>
+                                    <div class="metric-label">Approved Candidates</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="ballot-status">85%</div>
+                                    <div class="metric-label">Ballot Approval Status</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-list me-2"></i> Positions Overview</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Position</th>
+                                                    <th>Status</th>
+                                                    <th>Candidates</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="positions-table">
+                                                <!-- Populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-bell me-2"></i> Last-Minute Updates</h5>
+                                    <div id="updates-list">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Clerk Deployment Manager -->
+                    <div id="clerks" class="section">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3><i class="fas fa-users me-2"></i> Clerk Deployment Manager</h3>
+                                <p class="text-muted">Assign, manage, and track clerks and staff at polling stations</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="regional-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5><i class="fas fa-user-plus me-2"></i> Manage Clerks</h5>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClerkModal">
+                                            <i class="fas fa-plus me-2"></i> Add Clerk
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="clerks-list">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-clipboard-check me-2"></i> Deployment Checklist</h5>
+                                    <div id="deployment-checklist">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Polling Station Monitor -->
+                    <div id="stations" class="section">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3><i class="fas fa-building me-2"></i> Polling Station Monitor</h3>
+                                <p class="text-muted">Track polling station status across your county</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-map me-2"></i> Station Status Heat Map</h5>
+                                    <div class="heatmap-grid" id="stations-heatmap">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-exclamation-triangle me-2"></i> Alerts & Warnings</h5>
+                                    <div id="station-alerts">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-table me-2"></i> Detailed Station Status</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Station Name</th>
+                                                    <th>Status</th>
+                                                    <th>Clerks</th>
+                                                    <th>Devices</th>
+                                                    <th>Turnout</th>
+                                                    <th>Last Sync</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="stations-table">
+                                                <!-- Populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Voter Roll Verification -->
+                    <div id="voters" class="section">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3><i class="fas fa-id-card me-2"></i> Voter Roll Verification</h3>
+                                <p class="text-muted">Local read-only access to the voter register for your county</p>
+                            </div>
+                        </div>
+                        
+                        <div class="voter-search-box">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" id="voter-search" placeholder="Search by ID, name, or station">
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" id="ward-filter">
+                                        <option value="">All Wards</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select" id="status-filter">
+                                        <option value="">All Status</option>
+                                        <option value="voted">Voted</option>
+                                        <option value="not-voted">Not Voted</option>
+                                        <option value="disabled">Disabled</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-primary w-100" onclick="searchVoters()">
+                                        <i class="fas fa-search me-2"></i> Search
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="voter-results">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- 5. Form 34/35 Upload Monitor -->
+                    <div id="forms" class="section">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3><i class="fas fa-file-alt me-2"></i> Form 34/35 Upload Monitor</h3>
+                                <p class="text-muted">Ensure polling stations have uploaded their tally forms correctly</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-upload me-2"></i> Upload Tracker</h5>
+                                    <div id="form-upload-status">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-exclamation-circle me-2"></i> Verification Required</h5>
+                                    <div id="forms-verification">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-eye me-2"></i> Form Photo Match Viewer</h5>
+                                    <div id="form-photo-viewer">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. Incident Logbook & Escalation -->
+                    <div id="incidents" class="section">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3><i class="fas fa-exclamation-triangle me-2"></i> Incident Logbook & Escalation</h3>
+                                <p class="text-muted">Log issues or escalate risks to HQ immediately</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="regional-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5><i class="fas fa-list me-2"></i> Recent Incidents</h5>
+                                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#reportIncidentModal">
+                                            <i class="fas fa-plus me-2"></i> Report Incident
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="incidents-list">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-chart-pie me-2"></i> Incident Statistics</h5>
+                                    <div id="incident-stats">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. County Analytics Dashboard -->
+                    <div id="analytics" class="section">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3><i class="fas fa-chart-bar me-2"></i> County Analytics Dashboard</h3>
+                                <p class="text-muted">Live status of voting across your county</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="county-turnout">78.5%</div>
+                                    <div class="metric-label">County Turnout</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="offline-stations">3</div>
+                                    <div class="metric-label">Offline Stations</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="form-upload-rate">92%</div>
+                                    <div class="metric-label">Form Upload Rate</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="metric-card">
+                                    <div class="metric-value" id="active-clerks">15</div>
+                                    <div class="metric-label">Active Clerks</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="analytics-chart">
+                                    <h5><i class="fas fa-chart-line me-2"></i> Turnout by Ward</h5>
+                                    <canvas id="turnout-chart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="analytics-chart">
+                                    <h5><i class="fas fa-chart-pie me-2"></i> Device Status Distribution</h5>
+                                    <canvas id="device-chart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="regional-card">
+                                    <h5><i class="fas fa-table me-2"></i> Clerk Performance Log</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Clerk Name</th>
+                                                    <th>Station</th>
+                                                    <th>Check-in Time</th>
+                                                    <th>Last Activity</th>
+                                                    <th>Performance</th>
+                                                    <th>Issues</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="clerk-performance-table">
+                                                <!-- Populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Clerk Modal -->
+    <div class="modal fade" id="addClerkModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Clerk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-clerk-form">
+                        <div class="mb-3">
+                            <label for="clerk-name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="clerk-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clerk-national-id" class="form-label">National ID</label>
+                            <input type="text" class="form-control" id="clerk-national-id" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clerk-phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="clerk-phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clerk-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="clerk-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="clerk-station" class="form-label">Assigned Station</label>
+                            <select class="form-select" id="clerk-station" required>
+                                <!-- Populated by JavaScript -->
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addClerk()">Add Clerk</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Incident Modal -->
+    <div class="modal fade" id="reportIncidentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Report Incident</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="incident-form">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="incident-type" class="form-label">Incident Type</label>
+                                    <select class="form-select" id="incident-type" required>
+                                        <option value="">Select Type</option>
+                                        <option value="device_failure">Device Failure</option>
+                                        <option value="violence">Violence</option>
+                                        <option value="clerks_absence">Clerk Absence</option>
+                                        <option value="missing_materials">Missing Materials</option>
+                                        <option value="network_issue">Network Issue</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="incident-severity" class="form-label">Severity</label>
+                                    <select class="form-select" id="incident-severity" required>
+                                        <option value="">Select Severity</option>
+                                        <option value="info">Information</option>
+                                        <option value="moderate">Moderate</option>
+                                        <option value="critical">Critical</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="incident-station" class="form-label">Affected Station</label>
+                            <select class="form-select" id="incident-station" required>
+                                <!-- Populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="incident-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="incident-description" rows="4" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="incident-evidence" class="form-label">Evidence (Photo/Video)</label>
+                            <input type="file" class="form-control" id="incident-evidence" accept="image/*,video/*">
+                        </div>
+                        <div class="mb-3">
+                            <label for="incident-witness" class="form-label">Witness Statement (Optional)</label>
+                            <textarea class="form-control" id="incident-witness" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="submitIncident()">Submit Incident</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="regional-admin.js"></script>
+</body>
+</html>

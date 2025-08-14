@@ -1,0 +1,40 @@
+{
+  "name": "iebc-electoral-system",
+  "version": "2.0.0",
+  "description": "Comprehensive IEBC Electoral Management System with Three-Tier Access Control",
+  "main": "index.js",
+  "scripts": {
+    "start": "node electoral-system-api/server.js",
+    "dev": "concurrently \"npm run start\" \"npm run serve\"",
+    "serve": "http-server . -p 8080 -c-1",
+    "build": "echo 'Build process for production'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "IEBC",
+    "elections",
+    "voting",
+    "dashboard",
+    "admin",
+    "regional",
+    "bomas",
+    "executive"
+  ],
+  "author": "IEBC Development Team",
+  "license": "ISC",
+  "dependencies": {
+    "json-server": "^1.0.0-beta.1",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "socket.io": "^4.7.4"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "http-server": "^14.1.1",
+    "nodemon": "^3.0.2"
+  }
+}

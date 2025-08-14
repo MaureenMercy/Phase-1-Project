@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IEBC Bomas HQ Operations Dashboard</title>
+    <link rel="stylesheet" href="index.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" rel="stylesheet">
+    <style>
+        .bomas-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .bomas-logo {
+            font-size: 3rem;
+            color: #ffd700;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .operations-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 5px solid #2a5298;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .operations-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+        .auth-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+        .national-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .metric-card:hover {
+            transform: scale(1.05);
+        }
+        .metric-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .metric-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .results-map {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #dee2e6;
+        }
+        .sidebar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        .sidebar .nav-link {
+            color: #e8ecf1;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .sidebar .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: #ffd700;
+        }
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-left-color: #ffd700;
+        }
+        .main-content {
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .tally-engine {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+        .evidence-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .evidence-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .evidence-item:hover {
+            transform: translateY(-3px);
+        }
+        .alert-center {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .security-alert {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #dc3545;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .publish-controls {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+        .device-auth {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        .audit-trail {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            border: 1px solid #dee2e6;
+        }
+        .log-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .status-online { background: #28a745; }
+        .status-offline { background: #dc3545; }
+        .status-warning { background: #ffc107; }
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0.7;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Section -->
+    <div id="auth-section" class="auth-section">
+        <div class="auth-card">
+            <div class="text-center mb-4">
+                <div class="bomas-logo mb-3">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h2 class="text-primary">IEBC Bomas HQ Operations</h2>
+                <p class="text-muted">National Tally Center Management</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Restricted Access:</strong> Authorized personnel only
+                </div>
+            </div>
+            
+            <form id="bomas-login-form">
+                <div class="mb-3">
+                    <label for="admin-username" class="form-label">Admin Username</label>
+                    <input type="text" id="admin-username" class="form-control" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="admin-password" class="form-label">Admin Password</label>
+                    <input type="password" id="admin-password" class="form-control" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="two-factor" class="form-label">Two-Factor Authentication</label>
+                    <input type="text" id="two-factor" class="form-control" maxlength="6" placeholder="Enter 6-digit code">
+                </div>
+                
+                <div class="device-auth mb-3">
+                    <h6><i class="fas fa-desktop me-2"></i>Device Assignment</h6>
+                    <p class="mb-2">Only assigned devices can access this portal</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="device-verified" required>
+                        <label class="form-check-label" for="device-verified">
+                            This device is registered and authorized
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100 btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Secure Access
+                </button>
+            </form>
+            
+            <div class="audit-trail">
+                <h6><i class="fas fa-history me-2"></i>Audit Trail</h6>
+                <div class="log-entry">
+                    <span>All login attempts are logged</span>
+                    <span class="badge bg-info">Active</span>
+                </div>
+                <div class="log-entry">
+                    <span>Session tracking enabled</span>
+                    <span class="badge bg-success">Secure</span>
+                </div>
+                <div class="log-entry">
+                    <span>Device fingerprinting active</span>
+                    <span class="badge bg-warning">Monitoring</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Dashboard -->
+    <div id="main-dashboard" class="d-none">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-2 sidebar">
+                    <div class="text-center mb-4">
+                        <div class="bomas-logo">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h4 class="text-white mt-2">Bomas HQ</h4>
+                        <p class="text-light">Operations Center</p>
+                    </div>
+                    
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#results-map" data-section="results-map">
+                            <i class="fas fa-map me-2"></i>Results Map
+                        </a>
+                        <a class="nav-link" href="#tallying" data-section="tallying">
+                            <i class="fas fa-calculator me-2"></i>Tallying Engine
+                        </a>
+                        <a class="nav-link" href="#evidence" data-section="evidence">
+                            <i class="fas fa-folder-open me-2"></i>Evidence Repository
+                        </a>
+                        <a class="nav-link" href="#monitoring" data-section="monitoring">
+                            <i class="fas fa-eye me-2"></i>Monitoring
+                        </a>
+                        <a class="nav-link" href="#alerts" data-section="alerts">
+                            <i class="fas fa-bell me-2"></i>Alert Center
+                        </a>
+                        <a class="nav-link" href="#judiciary" data-section="judiciary">
+                            <i class="fas fa-gavel me-2"></i>Judiciary Sync
+                        </a>
+                        <a class="nav-link" href="#publishing" data-section="publishing">
+                            <i class="fas fa-broadcast-tower me-2"></i>Publishing
+                        </a>
+                    </nav>
+                </div>
+                
+                <!-- Main Content -->
+                <div class="col-md-10 main-content">
+                    <div class="bomas-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1><i class="fas fa-building me-2"></i>Bomas HQ Operations Dashboard</h1>
+                                <p class="mb-0">National Tally Center Management System</p>
+                            </div>
+                            <div class="text-end">
+                                <div class="badge bg-success mb-2">SECURE SESSION</div>
+                                <div>
+                                    <small>Officer: <span id="officer-name">Commissioner Smith</span></small><br>
+                                    <small>Device: <span id="device-id">BOMAS-TERM-001</span></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- National Metrics -->
+                    <div class="national-metrics">
+                        <div class="metric-card">
+                            <div class="metric-value" id="total-results">234</div>
+                            <div class="metric-label">Results Received</div>
+                        </div>
+                        <div class="metric-card bg-success">
+                            <div class="metric-value" id="verified-results">220</div>
+                            <div class="metric-label">Verified Results</div>
+                        </div>
+                        <div class="metric-card bg-warning">
+                            <div class="metric-value" id="flagged-results">8</div>
+                            <div class="metric-label">Flagged for Review</div>
+                        </div>
+                        <div class="metric-card bg-info">
+                            <div class="metric-value" id="turnout-percentage">67%</div>
+                            <div class="metric-label">National Turnout</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Results Map Section -->
+                    <div id="results-map" class="section active">
+                        <div class="operations-card">
+                            <h4><i class="fas fa-map me-2"></i>Real-time Results Map</h4>
+                            <div class="results-map">
+                                <div class="text-center">
+                                    <i class="fas fa-map-marked-alt" style="font-size: 4rem; color: #dee2e6; margin-bottom: 1rem;"></i>
+                                    <h5 class="text-muted">Interactive National Results Map</h5>
+                                    <p class="text-muted">Live election outcomes by constituency, color-coded by winner</p>
+                                    <div class="row mt-4">
+                                        <div class="col-md-3">
+                                            <div class="text-center">
+                                                <div class="status-indicator status-online"></div>
+                                                <span>Leading Party A</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="text-center">
+                                                <div class="status-indicator status-warning"></div>
+                                                <span>Leading Party B</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="text-center">
+                                                <div class="status-indicator status-offline"></div>
+                                                <span>No Data</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="text-center">
+                                                <div class="status-indicator" style="background: #6f42c1;"></div>
+                                                <span>Contested</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="operations-card">
+                            <h5><i class="fas fa-chart-pie me-2"></i>National Summary</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <canvas id="resultsChart" width="400" height="200"></canvas>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Position</th>
+                                                    <th>Leading Candidate</th>
+                                                    <th>Votes</th>
+                                                    <th>%</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>President</td>
+                                                    <td>William Ruto</td>
+                                                    <td>7,176,141</td>
+                                                    <td>50.49%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Deputy President</td>
+                                                    <td>Rigathi Gachagua</td>
+                                                    <td>7,176,141</td>
+                                                    <td>50.49%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tallying Engine Section -->
+                    <div id="tallying" class="section d-none">
+                        <div class="tally-engine">
+                            <h4><i class="fas fa-calculator me-2"></i>Tallying Engine Access</h4>
+                            <p>Input and confirm official Form 34B and 34C numbers</p>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button class="btn btn-light btn-lg w-100 mb-3">
+                                        <i class="fas fa-file-alt me-2"></i>Form 34B Entry
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-light btn-lg w-100 mb-3">
+                                        <i class="fas fa-file-contract me-2"></i>Form 34C Entry
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-warning btn-lg w-100 mb-3">
+                                        <i class="fas fa-lock me-2"></i>Secure Tallying
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="operations-card">
+                            <h5><i class="fas fa-list me-2"></i>Tallying Queue</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Constituency</th>
+                                            <th>Form Type</th>
+                                            <th>Status</th>
+                                            <th>Officer</th>
+                                            <th>Timestamp</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Kibra</td>
+                                            <td>Form 34B</td>
+                                            <td><span class="badge bg-success">Verified</span></td>
+                                            <td>J. Mwangi</td>
+                                            <td>14:30:15</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View</button>
+                                                <button class="btn btn-sm btn-outline-success">Approve</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Langata</td>
+                                            <td>Form 34B</td>
+                                            <td><span class="badge bg-warning">Pending</span></td>
+                                            <td>M. Njeri</td>
+                                            <td>14:45:22</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View</button>
+                                                <button class="btn btn-sm btn-outline-warning">Review</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Embakasi East</td>
+                                            <td>Form 34C</td>
+                                            <td><span class="badge bg-danger">Flagged</span></td>
+                                            <td>P. Kamau</td>
+                                            <td>15:12:08</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View</button>
+                                                <button class="btn btn-sm btn-outline-danger">Investigate</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Evidence Repository Section -->
+                    <div id="evidence" class="section d-none">
+                        <div class="operations-card">
+                            <h4><i class="fas fa-folder-open me-2"></i>Evidence Repository</h4>
+                            <p>Upload and view scanned Forms 34A/B/C for validation</p>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <div class="metric-card">
+                                        <div class="metric-value">1,150</div>
+                                        <div class="metric-label">Form 34A</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-info">
+                                        <div class="metric-value">89</div>
+                                        <div class="metric-label">Form 34B</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-success">
+                                        <div class="metric-value">67</div>
+                                        <div class="metric-label">Form 34C</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card bg-warning">
+                                        <div class="metric-value">2,340</div>
+                                        <div class="metric-label">Photo Evidence</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="evidence-grid">
+                                <div class="evidence-item">
+                                    <h6><i class="fas fa-file-image me-2"></i>Form 34A - Kibra</h6>
+                                    <p class="text-muted">Presidential results from Kibra Constituency</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Uploaded: 2 hours ago</small>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                            <button class="btn btn-sm btn-outline-success">Verify</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="evidence-item">
+                                    <h6><i class="fas fa-file-image me-2"></i>Form 34B - Langata</h6>
+                                    <p class="text-muted">Parliamentary results from Langata Constituency</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Uploaded: 3 hours ago</small>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                            <button class="btn btn-sm btn-outline-warning">Flag</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="evidence-item">
+                                    <h6><i class="fas fa-camera me-2"></i>Polling Station Evidence</h6>
+                                    <p class="text-muted">Photos from Kenyatta Primary School</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Uploaded: 1 hour ago</small>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary">Gallery</button>
+                                            <button class="btn btn-sm btn-outline-info">Download</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Monitoring Section -->
+                    <div id="monitoring" class="section d-none">
+                        <div class="operations-card">
+                            <h4><i class="fas fa-eye me-2"></i>Monitor Flagged Returns</h4>
+                            <p>View forms flagged by AI or regional officers for mismatch</p>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Constituency</th>
+                                            <th>Form Type</th>
+                                            <th>Flagged By</th>
+                                            <th>Reason</th>
+                                            <th>Priority</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Embakasi East</td>
+                                            <td>Form 34B</td>
+                                            <td>AI System</td>
+                                            <td>Number mismatch detected</td>
+                                            <td><span class="badge bg-danger">High</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Review</button>
+                                                <button class="btn btn-sm btn-outline-success">Resolve</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Westlands</td>
+                                            <td>Form 34A</td>
+                                            <td>Regional Officer</td>
+                                            <td>Unclear signature</td>
+                                            <td><span class="badge bg-warning">Medium</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Review</button>
+                                                <button class="btn btn-sm btn-outline-warning">Escalate</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Kasarani</td>
+                                            <td>Form 34C</td>
+                                            <td>AI System</td>
+                                            <td>Late submission</td>
+                                            <td><span class="badge bg-info">Low</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">Review</button>
+                                                <button class="btn btn-sm btn-outline-success">Accept</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Alert Center Section -->
+                    <div id="alerts" class="section d-none">
+                        <div class="operations-card">
+                            <h4><i class="fas fa-bell me-2"></i>Security & System Alerts</h4>
+                            <p>Real-time alerts for security, connectivity, and system issues</p>
+                            
+                            <div class="alert-center">
+                                <div class="security-alert">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle text-danger me-3" style="font-size: 1.5rem;"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">Security Alert</h6>
+                                            <p class="mb-1">Unusual login attempt detected from IP 192.168.1.100</p>
+                                            <small class="text-muted">2 minutes ago</small>
+                                        </div>
+                                        <button class="btn btn-outline-danger btn-sm">Investigate</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="security-alert" style="border-left-color: #ffc107;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-wifi text-warning me-3" style="font-size: 1.5rem;"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">Connectivity Alert</h6>
+                                            <p class="mb-1">5 polling stations have lost connection</p>
+                                            <small class="text-muted">5 minutes ago</small>
+                                        </div>
+                                        <button class="btn btn-outline-warning btn-sm">Check Status</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="security-alert" style="border-left-color: #dc3545;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-tools text-danger me-3" style="font-size: 1.5rem;"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">Device Malfunction</h6>
+                                            <p class="mb-1">Multiple biometric scanners reported failures</p>
+                                            <small class="text-muted">15 minutes ago</small>
+                                        </div>
+                                        <button class="btn btn-outline-danger btn-sm">Dispatch Tech</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="security-alert" style="border-left-color: #17a2b8;">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-server text-info me-3" style="font-size: 1.5rem;"></i>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">System Status</h6>
+                                            <p class="mb-1">Backup server synchronization completed successfully</p>
+                                            <small class="text-muted">30 minutes ago</small>
+                                        </div>
+                                        <button class="btn btn-outline-info btn-sm">View Report</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Judiciary Sync Section -->
+                    <div id="judiciary" class="section d-none">
+                        <div class="operations-card">
+                            <h4><i class="fas fa-gavel me-2"></i>Judiciary Interface</h4>
+                            <p>Read-only logs and form bundles for judicial review</p>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-file-alt me-2"></i>Form Bundles</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="list-group">
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Presidential Forms Package</span>
+                                                    <span class="badge bg-success">Ready</span>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>Parliamentary Forms Package</span>
+                                                    <span class="badge bg-warning">Processing</span>
+                                                </div>
+                                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                    <span>County Forms Package</span>
+                                                    <span class="badge bg-info">Pending</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6><i class="fas fa-clipboard-list me-2"></i>Judiciary Logs</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="log-entry">
+                                                <span>Package requested: Presidential</span>
+                                                <span class="badge bg-primary">14:30</span>
+                                            </div>
+                                            <div class="log-entry">
+                                                <span>Access granted: Judge Ouko</span>
+                                                <span class="badge bg-success">14:15</span>
+                                            </div>
+                                            <div class="log-entry">
+                                                <span>Audit trail generated</span>
+                                                <span class="badge bg-info">14:00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Publishing Section -->
+                    <div id="publishing" class="section d-none">
+                        <div class="publish-controls">
+                            <h4><i class="fas fa-broadcast-tower me-2"></i>Results Publishing</h4>
+                            <p>Push regional and national results to public dashboard</p>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button class="btn btn-light btn-lg w-100 mb-3">
+                                        <i class="fas fa-eye me-2"></i>Preview Results
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-warning btn-lg w-100 mb-3">
+                                        <i class="fas fa-upload me-2"></i>Publish Updates
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-danger btn-lg w-100 mb-3">
+                                        <i class="fas fa-stop me-2"></i>Emergency Stop
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="operations-card">
+                            <h5><i class="fas fa-history me-2"></i>Publishing History</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>Content</th>
+                                            <th>Officer</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>15:30:45</td>
+                                            <td>Presidential results update</td>
+                                            <td>Commissioner Smith</td>
+                                            <td><span class="badge bg-success">Published</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View</button>
+                                                <button class="btn btn-sm btn-outline-warning">Recall</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>14:45:20</td>
+                                            <td>Parliamentary results - Batch 3</td>
+                                            <td>Commissioner Johnson</td>
+                                            <td><span class="badge bg-success">Published</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-primary">View</button>
+                                                <button class="btn btn-sm btn-outline-info">Archive</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Session Watermark -->
+    <div class="watermark">
+        <div>Session ID: <span id="session-id">BOMAS-2024-001</span></div>
+        <div>Device: <span id="device-fingerprint">TERM-001</span></div>
+        <div>Officer: <span id="watermark-officer">Commissioner Smith</span></div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="bomas-hq.js"></script>
+</body>
+</html>

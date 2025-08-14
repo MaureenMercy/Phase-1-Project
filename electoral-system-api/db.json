@@ -1,0 +1,411 @@
+{
+  "users": [
+    {
+      "id": "regional001",
+      "nationalId": "12345678",
+      "name": "County Officer - Nairobi",
+      "role": "regional",
+      "assignedCounty": "Nairobi",
+      "assignedConstituency": "Westlands",
+      "assignedWards": ["Westlands", "Parklands", "Lavington"],
+      "permissions": ["view_voters", "manage_clerks", "report_incidents", "view_results"],
+      "status": "active",
+      "lastLogin": "2024-08-09T08:00:00.000Z"
+    },
+    {
+      "id": "regional002",
+      "nationalId": "87654321",
+      "name": "County Officer - Mombasa",
+      "role": "regional",
+      "assignedCounty": "Mombasa",
+      "assignedConstituency": "Mvita",
+      "assignedWards": ["Mvita", "Tudor", "Changamwe"],
+      "permissions": ["view_voters", "manage_clerks", "report_incidents", "view_results"],
+      "status": "active",
+      "lastLogin": "2024-08-09T08:15:00.000Z"
+    },
+    {
+      "id": "bomas001",
+      "nationalId": "11111111",
+      "name": "Bomas Control Room Staff",
+      "role": "bomas",
+      "permissions": ["view_results", "process_forms", "monitor_alerts", "manage_regional"],
+      "status": "active",
+      "lastLogin": "2024-08-09T07:30:00.000Z"
+    },
+    {
+      "id": "executive001",
+      "nationalId": "99999999",
+      "name": "IEBC Commissioner",
+      "role": "executive",
+      "permissions": ["full_access", "emergency_controls", "final_approval", "system_override"],
+      "status": "active",
+      "lastLogin": "2024-08-09T06:00:00.000Z"
+    }
+  ],
+  "voters": [
+    {
+      "id": "38860346",
+      "name": "Moreen Wanjiku",
+      "dob": "2000-02-16",
+      "address": "P.O. Box 1234, Nairobi",
+      "phone": "+254701234567",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "ward": "Westlands",
+      "pollingStation": "Westlands Primary School",
+      "status": "Active",
+      "registrationDate": "2024-01-15T09:30:00.000Z",
+      "hasVoted": false,
+      "votingTime": null
+    },
+    {
+      "id": "12345678",
+      "name": "John Kamau",
+      "dob": "1985-05-20",
+      "address": "P.O. Box 5678, Mombasa",
+      "phone": "+254712345678",
+      "county": "Mombasa",
+      "constituency": "Mvita",
+      "ward": "Mvita",
+      "pollingStation": "Mombasa Primary School",
+      "status": "Active",
+      "registrationDate": "2024-01-16T10:15:00.000Z",
+      "hasVoted": false,
+      "votingTime": null
+    },
+    {
+      "id": "87654321",
+      "name": "Grace Nyong'o",
+      "dob": "1992-12-03",
+      "address": "P.O. Box 9999, Kisumu",
+      "phone": "+254723456789",
+      "county": "Kisumu",
+      "constituency": "Kisumu Central",
+      "ward": "Central",
+      "pollingStation": "Kisumu High School",
+      "status": "Active",
+      "registrationDate": "2024-01-17T14:22:00.000Z",
+      "hasVoted": false,
+      "votingTime": null
+    }
+  ],
+  "candidates": [
+    {
+      "id": "CAND001",
+      "name": "Karen Nyamu",
+      "party": "UDA",
+      "position": "Senator",
+      "county": "Nairobi",
+      "constituency": "Nairobi",
+      "registrationDate": "2024-01-10T08:00:00.000Z",
+      "status": "approved",
+      "approvalDate": "2024-01-15T10:00:00.000Z",
+      "approvedBy": "regional001"
+    },
+    {
+      "id": "CAND002",
+      "name": "Kimani Ichung'wa",
+      "party": "UDA",
+      "position": "MP",
+      "county": "Nairobi",
+      "constituency": "Kikuyu",
+      "registrationDate": "2024-01-10T08:30:00.000Z",
+      "status": "approved",
+      "approvalDate": "2024-01-15T10:30:00.000Z",
+      "approvedBy": "regional001"
+    },
+    {
+      "id": "CAND003",
+      "name": "Martha Karua",
+      "party": "NARC Kenya",
+      "position": "Women Rep",
+      "county": "Nairobi",
+      "constituency": "Nairobi",
+      "registrationDate": "2024-01-11T09:00:00.000Z",
+      "status": "approved",
+      "approvalDate": "2024-01-15T11:00:00.000Z",
+      "approvedBy": "regional001"
+    },
+    {
+      "id": "CAND004",
+      "name": "Raila Odinga",
+      "party": "ODM",
+      "position": "President",
+      "deputy": "Martha Karua",
+      "county": "National",
+      "constituency": "National",
+      "registrationDate": "2024-01-11T09:30:00.000Z",
+      "status": "approved",
+      "approvalDate": "2024-01-15T11:30:00.000Z",
+      "approvedBy": "executive001"
+    },
+    {
+      "id": "CAND005",
+      "name": "William Ruto",
+      "party": "UDA",
+      "position": "President",
+      "deputy": "Rigathi Gachagua",
+      "county": "National",
+      "constituency": "National",
+      "registrationDate": "2024-01-11T10:00:00.000Z",
+      "status": "approved",
+      "approvalDate": "2024-01-15T12:00:00.000Z",
+      "approvedBy": "executive001"
+    }
+  ],
+  "elections": [
+    {
+      "id": "ELEC2024-001",
+      "name": "General Election 2024",
+      "date": "2024-08-09",
+      "type": "General",
+      "status": "active",
+      "positions": ["President", "Governor", "Senator", "MP", "Women Rep", "MCA"],
+      "counties": ["Nairobi", "Mombasa", "Kisumu", "Nakuru", "Machakos"],
+      "createdBy": "executive001",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "pollingStations": [
+    {
+      "id": "PS001",
+      "name": "Westlands Primary School",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "ward": "Westlands",
+      "address": "Westlands, Nairobi",
+      "coordinates": {"lat": -1.2921, "lng": 36.8219},
+      "status": "open",
+      "openingTime": "06:00",
+      "closingTime": "17:00",
+      "totalVoters": 2500,
+      "registeredVoters": 2500,
+      "votedVoters": 1800,
+      "turnout": 72.0,
+      "clerks": ["CLK001", "CLK002", "CLK003"],
+      "devices": ["TAB001", "PRN001", "BIO001"],
+      "lastSync": "2024-08-09T14:30:00.000Z",
+      "isOnline": true
+    },
+    {
+      "id": "PS002",
+      "name": "Parklands High School",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "ward": "Parklands",
+      "address": "Parklands, Nairobi",
+      "coordinates": {"lat": -1.2850, "lng": 36.8150},
+      "status": "open",
+      "openingTime": "06:00",
+      "closingTime": "17:00",
+      "totalVoters": 1800,
+      "registeredVoters": 1800,
+      "votedVoters": 1350,
+      "turnout": 75.0,
+      "clerks": ["CLK004", "CLK005", "CLK006"],
+      "devices": ["TAB002", "PRN002", "BIO002"],
+      "lastSync": "2024-08-09T14:25:00.000Z",
+      "isOnline": true
+    },
+    {
+      "id": "PS003",
+      "name": "Lavington Mall",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "ward": "Lavington",
+      "address": "Lavington, Nairobi",
+      "coordinates": {"lat": -1.2800, "lng": 36.8100},
+      "status": "closed",
+      "openingTime": "06:00",
+      "closingTime": "17:00",
+      "totalVoters": 1200,
+      "registeredVoters": 1200,
+      "votedVoters": 0,
+      "turnout": 0.0,
+      "clerks": [],
+      "devices": [],
+      "lastSync": null,
+      "isOnline": false
+    }
+  ],
+  "clerks": [
+    {
+      "id": "CLK001",
+      "name": "Alice Wanjiku",
+      "nationalId": "11111111",
+      "phone": "+254700000001",
+      "email": "alice.wanjiku@iebc.go.ke",
+      "assignedStation": "PS001",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "status": "active",
+      "trainingCompleted": true,
+      "deviceTraining": true,
+      "checkInTime": "2024-08-09T05:45:00.000Z",
+      "lastActivity": "2024-08-09T14:30:00.000Z"
+    },
+    {
+      "id": "CLK002",
+      "name": "John Mwangi",
+      "nationalId": "22222222",
+      "phone": "+254700000002",
+      "email": "john.mwangi@iebc.go.ke",
+      "assignedStation": "PS001",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "status": "active",
+      "trainingCompleted": true,
+      "deviceTraining": true,
+      "checkInTime": "2024-08-09T05:50:00.000Z",
+      "lastActivity": "2024-08-09T14:30:00.000Z"
+    }
+  ],
+  "devices": [
+    {
+      "id": "TAB001",
+      "type": "tablet",
+      "model": "Samsung Galaxy Tab A",
+      "serialNumber": "SN001234567",
+      "assignedStation": "PS001",
+      "assignedClerk": "CLK001",
+      "status": "online",
+      "lastSync": "2024-08-09T14:30:00.000Z",
+      "batteryLevel": 85,
+      "networkStatus": "connected",
+      "softwareVersion": "v2.1.0"
+    },
+    {
+      "id": "PRN001",
+      "type": "printer",
+      "model": "Epson TM-T88VI",
+      "serialNumber": "SN987654321",
+      "assignedStation": "PS001",
+      "assignedClerk": "CLK001",
+      "status": "online",
+      "lastSync": "2024-08-09T14:30:00.000Z",
+      "paperLevel": "high",
+      "inkLevel": "medium",
+      "softwareVersion": "v1.5.2"
+    },
+    {
+      "id": "BIO001",
+      "type": "biometric_scanner",
+      "model": "Suprema BioMini",
+      "serialNumber": "SN555666777",
+      "assignedStation": "PS001",
+      "assignedClerk": "CLK001",
+      "status": "online",
+      "lastSync": "2024-08-09T14:30:00.000Z",
+      "batteryLevel": 90,
+      "calibrationStatus": "calibrated",
+      "softwareVersion": "v3.0.1"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "INC001",
+      "type": "device_failure",
+      "severity": "moderate",
+      "description": "Tablet battery draining too fast",
+      "reportedBy": "CLK001",
+      "station": "PS001",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "status": "reported",
+      "timestamp": "2024-08-09T10:30:00.000Z",
+      "escalatedToHQ": false,
+      "resolution": null,
+      "resolvedBy": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC002",
+      "type": "violence",
+      "severity": "critical",
+      "description": "Fight broke out between party agents",
+      "reportedBy": "CLK003",
+      "station": "PS002",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "status": "escalated",
+      "timestamp": "2024-08-09T11:15:00.000Z",
+      "escalatedToHQ": true,
+      "resolution": "Police called, situation under control",
+      "resolvedBy": "regional001",
+      "resolvedAt": "2024-08-09T11:45:00.000Z"
+    }
+  ],
+  "forms": [
+    {
+      "id": "FORM001",
+      "type": "34A",
+      "station": "PS001",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "position": "President",
+      "uploadedBy": "CLK001",
+      "uploadTime": "2024-08-09T17:30:00.000Z",
+      "status": "uploaded",
+      "verificationStatus": "pending",
+      "verifiedBy": null,
+      "verifiedAt": null,
+      "discrepancies": [],
+      "photoUrl": "/uploads/form001.jpg",
+      "typedData": {
+        "totalVotes": 1800,
+        "validVotes": 1780,
+        "rejectedVotes": 20,
+        "candidates": [
+          {"name": "William Ruto", "votes": 950},
+          {"name": "Raila Odinga", "votes": 830}
+        ]
+      }
+    }
+  ],
+  "results": [
+    {
+      "id": "RES001",
+      "position": "President",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "totalVotes": 1800,
+      "validVotes": 1780,
+      "rejectedVotes": 20,
+      "turnout": 72.0,
+      "candidates": [
+        {"name": "William Ruto", "party": "UDA", "votes": 950, "percentage": 53.4},
+        {"name": "Raila Odinga", "party": "ODM", "votes": 830, "percentage": 46.6}
+      ],
+      "lastUpdated": "2024-08-09T17:30:00.000Z",
+      "status": "provisional",
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "AUD001",
+      "timestamp": "2024-08-09T08:00:00.000Z",
+      "user": "regional001",
+      "action": "login",
+      "details": "User logged in successfully",
+      "ipAddress": "192.168.1.100",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+  ],
+  "systemStatus": {
+    "overall": "operational",
+    "lastUpdated": "2024-08-09T14:30:00.000Z",
+    "components": {
+      "database": "online",
+      "api": "online",
+      "websocket": "online",
+      "regional": "online",
+      "bomas": "online",
+      "executive": "online"
+    },
+    "alerts": [],
+    "maintenance": []
+  }
+}
