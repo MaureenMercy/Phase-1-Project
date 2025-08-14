@@ -4,7 +4,7 @@ A comprehensive, three-tier electoral management system designed for the Indepen
 
 ## 🏗️ System Architecture
 
-The system is split into three distinct access levels, each with specific responsibilities and permissions:
+The system is split into four distinct access levels, each with specific responsibilities and permissions:
 
 ### 1. Regional IEBC Officers / County Commissions
 - **Purpose**: Manage elections within specific counties/constituencies/wards
@@ -23,6 +23,12 @@ The system is split into three distinct access levels, each with specific respon
 - **Access Level**: Ultra-restricted access for commissioners and executives
 - **Authentication**: Biometric + Physical token-based 2FA
 - **Scope**: Full system access, emergency controls, final approvals
+
+### 4. System Admin Dashboard (Technical Operations)
+- **Purpose**: Monitor, secure, maintain, and troubleshoot system infrastructure
+- **Access Level**: Technical operations only - NO access to electoral data
+- **Authentication**: System account + Biometric + Hardware token
+- **Scope**: System health, security, deployment, emergency tools
 
 ## 🚀 Features
 
@@ -50,6 +56,14 @@ The system is split into three distinct access levels, each with specific respon
 - **Admin Console**: System-wide controls and emergency interventions
 - **Final Result Sign-off**: Official result authorization
 - **AI Briefings**: Fraud detection and risk assessment
+
+### System Admin Dashboard
+- **System Health Monitor**: Live infrastructure metrics and performance
+- **Access Control Manager**: User management and security controls
+- **Version & Deployment Logs**: Code changes and update tracking
+- **Server & Node Sync Status**: Data synchronization monitoring
+- **Emergency Tools**: Critical system control (restricted access)
+- **AI Assistant Layer**: Machine learning insights and predictions
 
 ## 🛠️ Technology Stack
 
@@ -93,6 +107,7 @@ This will start both the API server (port 3000) and the static file server (port
 - **Regional Admin**: http://localhost:3000/regional-admin-portal.html
 - **Bomas HQ**: http://localhost:3000/bomas-hq-portal.html
 - **Executive Board**: http://localhost:3000/board-executive-portal.html
+- **System Admin**: http://localhost:3000/system-admin-dashboard.html
 
 ## 🔐 Authentication & Access
 
