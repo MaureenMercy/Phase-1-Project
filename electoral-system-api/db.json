@@ -407,5 +407,47 @@
     },
     "alerts": [],
     "maintenance": []
-  }
+  },
+  "observers": [
+    {
+      "id": "observer001",
+      "name": "Observer - Global Coalition",
+      "organization": "Global Democracy Coalition",
+      "level": "analyst",
+      "assignedCounties": ["Nairobi"],
+      "status": "active",
+      "lastLogin": "2024-08-09T09:00:00.000Z"
+    },
+    {
+      "id": "observer002",
+      "name": "Observer - ELOG",
+      "organization": "ELOG",
+      "level": "senior",
+      "assignedCounties": ["Nairobi", "Mombasa"],
+      "status": "active",
+      "lastLogin": "2024-08-09T09:10:00.000Z"
+    }
+  ],
+  "observationLogs": [
+  ],
+  "formFlags": [
+  ],
+  "observerInsights": [
+    {
+      "county": "Nairobi",
+      "womenParticipationPct": 52.3,
+      "youthParticipationPct": 47.1,
+      "disabledAccessReports": 14,
+      "riskScore": 0.18,
+      "lastUpdated": "2024-08-09T15:00:00.000Z"
+    },
+    {
+      "county": "Mombasa",
+      "womenParticipationPct": 49.2,
+      "youthParticipationPct": 44.7,
+      "disabledAccessReports": 9,
+      "riskScore": 0.22,
+      "lastUpdated": "2024-08-09T15:10:00.000Z"
+    }
+  ]
 }
