@@ -1,696 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IEBC - Electoral Management System</title>
-    <link rel="stylesheet" href="index.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>E-Ballot Voting System</title>
+    <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" rel="stylesheet">
 </head>
-
 <body>
-    <!-- Vertical Navigation Sidebar -->
-    <nav class="iebc-sidebar">
-        <div class="sidebar-header">
-            <div class="iebc-logo">
-                <i class="fas fa-vote-yea"></i>
-                <h3>IEBC</h3>
-            </div>
-            <p class="iebc-tagline">Uwazi. Uwonekano. Uongozi</p>
-        </div>
-        
-        <ul class="nav-menu">
-            <li class="nav-item active">
-                <a href="#home" class="nav-link" data-page="home">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#voter-account" class="nav-link" data-page="voter-account">
-                    <i class="fas fa-user"></i>
-                    <span>Voter Account</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#clerk-account" class="nav-link" data-page="clerk-account">
-                    <i class="fas fa-clipboard-check"></i>
-                    <span>Clerk Account</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#iebc-official" class="nav-link" data-page="iebc-official">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>IEBC Official</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#media-house" class="nav-link" data-page="media-house">
-                    <i class="fas fa-broadcast-tower"></i>
-                    <span>Media House</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
-    <!-- Main Content Area -->
-    <main class="main-content">
-        <!-- Home Page -->
-        <div id="home" class="page active">
-            <div class="home-container">
-                <div class="iebc-hero">
-                    <div class="iebc-logo-large">
-                        <i class="fas fa-vote-yea"></i>
-                    </div>
-                    <h1 class="iebc-title">Independent Electoral and Boundaries Commission</h1>
-                    <h2 class="iebc-tagline-large">Uwazi. Uwonekano. Uongozi</h2>
-                    <p class="iebc-description">Transparent, Credible and Efficient Electoral Processes</p>
+    <div id="app">
+        <!-- Login/Verification Page -->
+        <div id="login-page" class="page active">
+            <div class="login-container">
+                <div class="header">
+                    <h1><i class="fas fa-vote-yea"></i> E-Ballot System</h1>
+                    <p>Secure Digital Voting Platform</p>
+                </div>
+                
+                <div class="login-form">
+                    <h2>Voter Verification</h2>
                     
-                    <div class="quick-access">
-                        <h3>Quick Access</h3>
-                        <div class="quick-access-cards">
-                            <div class="quick-card" data-page="voter-account">
-                                <i class="fas fa-user"></i>
-                                <h4>Voter Portal</h4>
-                                <p>Check voter status, find polling station, view candidates</p>
+                    <div class="verification-methods">
+                        <div class="method-tabs">
+                            <button class="tab-btn active" data-method="biometric">
+                                <i class="fas fa-fingerprint"></i> Biometric Scan
+                            </button>
+                            <button class="tab-btn" data-method="otp">
+                                <i class="fas fa-sms"></i> OTP Login
+                            </button>
+                        </div>
+                        
+                        <div class="method-content">
+                            <!-- Biometric Method -->
+                            <div id="biometric-method" class="method active">
+                                <div class="biometric-scanner">
+                                    <div class="scanner-icon">
+                                        <i class="fas fa-fingerprint"></i>
+                                    </div>
+                                    <p>Place your finger on the scanner</p>
+                                    <button class="scan-btn" id="biometric-scan">
+                                        <i class="fas fa-hand-paper"></i> Start Scan
+                                    </button>
+                                </div>
                             </div>
-                            <div class="quick-card" data-page="clerk-account">
-                                <i class="fas fa-clipboard-check"></i>
-                                <h4>Election Officer</h4>
-                                <p>Polling station management and vote tallying</p>
-                            </div>
-                            <div class="quick-card" data-page="iebc-official">
-                                <i class="fas fa-shield-alt"></i>
-                                <h4>IEBC Official</h4>
-                                <p>National election monitoring and results</p>
-                            </div>
-                            <div class="quick-card" data-page="media-house">
-                                <i class="fas fa-broadcast-tower"></i>
-                                <h4>Media Access</h4>
-                                <p>Live election data and verified information</p>
+                            
+                            <!-- OTP Method -->
+                            <div id="otp-method" class="method">
+                                <div class="otp-form">
+                                    <div class="input-group">
+                                        <label for="id-number">ID Number</label>
+                                        <input type="text" id="id-number" placeholder="Enter your ID number" maxlength="8">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="phone-number">Phone Number</label>
+                                        <input type="tel" id="phone-number" placeholder="Enter your phone number">
+                                    </div>
+                                    <button class="otp-btn" id="request-otp">
+                                        <i class="fas fa-paper-plane"></i> Request OTP
+                                    </button>
+                                    
+                                    <div class="otp-verification" id="otp-verification" style="display: none;">
+                                        <div class="input-group">
+                                            <label for="otp-code">Enter OTP Code</label>
+                                            <input type="text" id="otp-code" placeholder="Enter 6-digit code" maxlength="6">
+                                        </div>
+                                        <button class="verify-btn" id="verify-otp">
+                                            <i class="fas fa-check"></i> Verify & Login
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="voter-info" id="voter-info" style="display: none;">
+                        <h3>Voter Information Confirmation</h3>
+                        <div class="info-card">
+                            <div class="info-item">
+                                <label>Name:</label>
+                                <span id="voter-name">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>ID Number:</label>
+                                <span id="voter-id">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>County:</label>
+                                <span id="voter-county">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Constituency:</label>
+                                <span id="voter-constituency">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Ward:</label>
+                                <span id="voter-ward">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="disclaimer">
+                            <i class="fas fa-info-circle"></i>
+                            <p>You will only be shown candidates eligible for your registered voting location.</p>
+                        </div>
+                        
+                        <button class="proceed-btn" id="proceed-to-voting">
+                            <i class="fas fa-arrow-right"></i> Proceed to Voting
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Voter Account Page -->
-        <div id="voter-account" class="page">
-            <div class="page-header">
-                <h1><i class="fas fa-user me-2"></i>Voter Account</h1>
-                <p>Public User / Citizen Portal</p>
-            </div>
-
-            <div class="auth-section" id="voter-auth">
-                <div class="auth-card">
-                    <h3>Voter Login</h3>
-                    <form id="voter-login-form">
-                        <div class="mb-3">
-                            <label for="voter-id-login" class="form-label">ID Number</label>
-                            <input type="text" id="voter-id-login" class="form-control" required pattern="[0-9]{8}" maxlength="8">
-                        </div>
-                        <div class="mb-3">
-                            <label for="voter-auth-method" class="form-label">Authentication Method</label>
-                            <select id="voter-auth-method" class="form-select" required>
-                                <option value="">Select Method</option>
-                                <option value="biometric">Biometric Verification</option>
-                                <option value="otp">SMS OTP</option>
-                            </select>
-                        </div>
-                        <div class="mb-3" id="otp-section" style="display: none;">
-                            <label for="voter-otp" class="form-label">Enter OTP</label>
-                            <input type="text" id="voter-otp" class="form-control" maxlength="6">
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt me-1"></i>Login
-                        </button>
-                    </form>
+        <!-- Voting Flow Pages -->
+        <div id="voting-flow" class="page">
+            <!-- Progress Indicator -->
+            <div class="voting-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-label">MCA</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-label">MP</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Women Rep</span>
+                    </div>
+                    <div class="step" data-step="4">
+                        <span class="step-number">4</span>
+                        <span class="step-label">Senator</span>
+                    </div>
+                    <div class="step" data-step="5">
+                        <span class="step-number">5</span>
+                        <span class="step-label">Governor</span>
+                    </div>
+                    <div class="step" data-step="6">
+                        <span class="step-number">6</span>
+                        <span class="step-label">President</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="dashboard-section" id="voter-dashboard" style="display: none;">
-                <div class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <h4>Voter Status</h4>
-                        <div id="voter-status-info">
-                            <p class="status-verified"><i class="fas fa-check"></i> Verified Voter</p>
-                            <p>Registration: Active</p>
-                            <p>Polling Station: Assigned</p>
-                        </div>
+            <!-- Voting Screens Container -->
+            <div class="voting-container">
+                <!-- MCA Voting Screen -->
+                <div id="mca-screen" class="voting-screen active">
+                    <div class="screen-header">
+                        <h2>Member of County Assembly (MCA)</h2>
+                        <p class="location-info" id="mca-location">Your Ward: <span id="ward-name">-</span></p>
                     </div>
+                    <div class="candidates-container" id="mca-candidates">
+                        <!-- Candidates will be dynamically loaded here -->
+                    </div>
+                </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                        <h4>Polling Station Locator</h4>
-                        <button class="btn btn-outline-primary" onclick="showPollingMap()">
-                            <i class="fas fa-map me-1"></i>Find My Station
-                        </button>
-                        <div id="polling-map" style="height: 200px; display: none; margin-top: 1rem;"></div>
+                <!-- MP Voting Screen -->
+                <div id="mp-screen" class="voting-screen">
+                    <div class="screen-header">
+                        <h2>Member of National Assembly (MP)</h2>
+                        <p class="location-info" id="mp-location">Your Constituency: <span id="constituency-name">-</span></p>
                     </div>
+                    <div class="candidates-container" id="mp-candidates">
+                        <!-- Candidates will be dynamically loaded here -->
+                    </div>
+                </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h4>Candidate Profiles</h4>
-                        <button class="btn btn-outline-primary" onclick="showCandidates()">
-                            <i class="fas fa-eye me-1"></i>View Candidates
-                        </button>
+                <!-- Women Rep Voting Screen -->
+                <div id="women-rep-screen" class="voting-screen">
+                    <div class="screen-header">
+                        <h2>County Woman Representative</h2>
+                        <p class="location-info" id="women-rep-location">Your County: <span id="county-name">-</span></p>
                     </div>
+                    <div class="candidates-container" id="women-rep-candidates">
+                        <!-- Candidates will be dynamically loaded here -->
+                    </div>
+                </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h4>Live Poll Updates</h4>
-                        <div id="live-updates">
-                            <p>Real-time election updates will appear here during voting period</p>
-                        </div>
+                <!-- Senator Voting Screen -->
+                <div id="senator-screen" class="voting-screen">
+                    <div class="screen-header">
+                        <h2>Senator</h2>
+                        <p class="location-info" id="senator-location">Your County: <span id="senator-county-name">-</span></p>
                     </div>
+                    <div class="candidates-container" id="senator-candidates">
+                        <!-- Candidates will be dynamically loaded here -->
+                    </div>
+                </div>
 
-                    <div class="dashboard-card vote-card">
-                        <div class="card-icon">
-                            <i class="fas fa-vote-yea"></i>
-                        </div>
-                        <h4>Vote Now</h4>
-                        <button class="btn btn-success btn-lg" id="vote-now-btn" onclick="showVotingInterface()">
-                            <i class="fas fa-vote-yea me-1"></i>CAST YOUR VOTE
-                        </button>
+                <!-- Governor Voting Screen -->
+                <div id="governor-screen" class="voting-screen">
+                    <div class="screen-header">
+                        <h2>Governor</h2>
+                        <p class="location-info" id="governor-location">Your County: <span id="governor-county-name">-</span></p>
                     </div>
+                    <div class="candidates-container" id="governor-candidates">
+                        <!-- Candidates will be dynamically loaded here -->
+                    </div>
+                </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h4>Ballot Preview</h4>
-                        <button class="btn btn-outline-primary" onclick="showBallotPreview()">
-                            <i class="fas fa-eye me-1"></i>Preview Ballot
-                        </button>
+                <!-- President Voting Screen -->
+                <div id="president-screen" class="voting-screen">
+                    <div class="screen-header">
+                        <h2>President</h2>
+                        <p class="location-info">National Ballot</p>
                     </div>
+                    <div class="candidates-container" id="president-candidates">
+                        <!-- Candidates will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-graduation-cap"></i>
-                        </div>
-                        <h4>Civic Education</h4>
-                        <div class="civic-options">
-                            <button class="btn btn-outline-primary btn-sm" onclick="startQuiz()">
-                                <i class="fas fa-question-circle me-1"></i>Take Quiz
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="watchVideos()">
-                                <i class="fas fa-play me-1"></i>Videos
-                            </button>
-                        </div>
-                    </div>
+            <!-- Navigation Controls -->
+            <div class="voting-controls">
+                <button class="nav-btn prev-btn" id="prev-btn" disabled>
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="nav-btn next-btn" id="next-btn" disabled>
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="nav-btn skip-btn" id="skip-btn" style="display: none;">
+                    <i class="fas fa-forward"></i> Skip (Optional)
+                </button>
+            </div>
+        </div>
 
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <h4>Assistance</h4>
-                        <button class="btn btn-outline-primary" onclick="requestAssistance()">
-                            <i class="fas fa-hands-helping me-1"></i>Request Help
-                        </button>
-                        <p class="small text-muted">Video call assistance for disabled or elderly voters</p>
-                    </div>
+        <!-- Review/Summary Page -->
+        <div id="review-page" class="page">
+            <div class="review-container">
+                <div class="review-header">
+                    <h2><i class="fas fa-clipboard-check"></i> Review Your Votes</h2>
+                    <p>Please review your selections before submitting your vote</p>
+                </div>
+                
+                <div class="votes-summary" id="votes-summary">
+                    <!-- Vote summary will be dynamically generated here -->
+                </div>
+                
+                <div class="review-controls">
+                    <button class="edit-btn" id="edit-votes">
+                        <i class="fas fa-edit"></i> Edit Votes
+                    </button>
+                    <button class="submit-btn" id="submit-vote">
+                        <i class="fas fa-check-circle"></i> Submit Your Vote
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Clerk Account Page -->
-        <div id="clerk-account" class="page">
-            <div class="page-header">
-                <h1><i class="fas fa-clipboard-check me-2"></i>Clerk Account</h1>
-                <p>Polling Station Officer Portal</p>
-            </div>
-
-            <div class="auth-section" id="clerk-auth">
-                <div class="auth-card">
-                    <h3>Clerk Authentication</h3>
-                    <form id="clerk-login-form">
-                        <div class="mb-3">
-                            <label for="clerk-smartcard" class="form-label">Smartcard ID</label>
-                            <input type="text" id="clerk-smartcard" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="clerk-biometric" class="form-label">Biometric Scan</label>
-                            <button type="button" class="btn btn-outline-primary" onclick="simulateBiometric()">
-                                <i class="fas fa-fingerprint me-1"></i>Scan Fingerprint
-                            </button>
-                        </div>
-                        <div class="mb-3">
-                            <label for="clerk-passphrase" class="form-label">Secure Passphrase</label>
-                            <input type="password" id="clerk-passphrase" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt me-1"></i>Access System
-                        </button>
-                    </form>
+        <!-- Confirmation Page -->
+        <div id="confirmation-page" class="page">
+            <div class="confirmation-container">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
                 </div>
-            </div>
-
-            <div class="dashboard-section" id="clerk-dashboard" style="display: none;">
-                <div class="status-bar">
-                    <div class="station-info">
-                        <h4>Assigned Station: <span id="assigned-station">PS-001 - Kenyatta Primary School</span></h4>
-                        <p>Staff on duty: <span id="staff-count">5</span> | Status: <span class="status-active">Active</span></p>
-                    </div>
-                    <div class="poll-timer">
-                        <button class="btn btn-success" id="open-poll-btn" onclick="openPoll()">
-                            <i class="fas fa-play me-1"></i>Open Poll
-                        </button>
-                        <button class="btn btn-danger" id="close-poll-btn" onclick="closePoll()" style="display: none;">
-                            <i class="fas fa-stop me-1"></i>Close Poll
-                        </button>
-                        <div id="poll-timer">Polling closed</div>
-                    </div>
-                </div>
-
-                <div class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-box"></i>
+                <h2>Vote Submitted Successfully!</h2>
+                <p>Thank you for participating in the democratic process.</p>
+                
+                <div class="receipt-info">
+                    <h3>Your Voting Receipt</h3>
+                    <div class="receipt-card">
+                        <div class="receipt-item">
+                            <label>Vote ID:</label>
+                            <span id="vote-id">-</span>
                         </div>
-                        <h4>Ballot Inventory</h4>
-                        <div id="ballot-inventory">
-                            <p>Digital: <span class="text-success">1,500</span></p>
-                            <p>Physical: <span class="text-warning">1,500</span></p>
-                            <p>Used: <span class="text-info">0</span></p>
+                        <div class="receipt-item">
+                            <label>Timestamp:</label>
+                            <span id="vote-timestamp">-</span>
                         </div>
-                        <button class="btn btn-outline-primary btn-sm" onclick="verifyInventory()">
-                            <i class="fas fa-check me-1"></i>Verify
-                        </button>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-user-check"></i>
-                        </div>
-                        <h4>Voter Check-in</h4>
-                        <form id="voter-checkin-form">
-                            <div class="mb-2">
-                                <input type="text" id="checkin-voter-id" class="form-control" placeholder="Scan/Enter Voter ID">
-                            </div>
-                            <button type="submit" class="btn btn-primary btn-sm">
-                                <i class="fas fa-fingerprint me-1"></i>Verify & Check-in
-                            </button>
-                        </form>
-                        <p>Checked in today: <span id="checkin-count">0</span></p>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <h4>Report Irregularities</h4>
-                        <div class="irregularity-buttons">
-                            <button class="btn btn-warning btn-sm" onclick="reportIrregularity('violence')">
-                                <i class="fas fa-fist-raised me-1"></i>Violence
-                            </button>
-                            <button class="btn btn-warning btn-sm" onclick="reportIrregularity('machine_failure')">
-                                <i class="fas fa-tools me-1"></i>Machine Failure
-                            </button>
-                            <button class="btn btn-warning btn-sm" onclick="reportIrregularity('impersonation')">
-                                <i class="fas fa-mask me-1"></i>Impersonation
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-calculator"></i>
-                        </div>
-                        <h4>Final Count</h4>
-                        <div id="vote-count">
-                            <p>Total Votes: <span id="total-count">0</span></p>
-                            <p>Last Sync: <span id="last-sync">Never</span></p>
-                        </div>
-                        <button class="btn btn-success" onclick="submitFinalCount()">
-                            <i class="fas fa-upload me-1"></i>Submit Count
-                        </button>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-wifi"></i>
-                        </div>
-                        <h4>Data Transmission</h4>
-                        <div id="transmission-status">
-                            <p>Connection: <span class="status-active">Online</span></p>
-                            <p>Next Sync: <span id="next-sync">15 min</span></p>
-                            <p>Geo-location: <span class="text-success">Verified</span></p>
+                        <div class="receipt-item">
+                            <label>Location:</label>
+                            <span id="vote-location">-</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- IEBC Official Account Page -->
-        <div id="iebc-official" class="page">
-            <div class="page-header">
-                <h1><i class="fas fa-shield-alt me-2"></i>IEBC Official Account</h1>
-                <p>National Electoral Commission Portal</p>
-            </div>
-
-            <div class="auth-section" id="official-auth">
-                <div class="auth-card">
-                    <h3>Official Authentication</h3>
-                    <form id="official-login-form">
-                        <div class="mb-3">
-                            <label for="official-username" class="form-label">Username</label>
-                            <input type="text" id="official-username" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="official-password" class="form-label">Password</label>
-                            <input type="password" id="official-password" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="official-2fa" class="form-label">2FA Code</label>
-                            <input type="text" id="official-2fa" class="form-control" required maxlength="6">
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-shield-alt me-1"></i>Secure Login
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="dashboard-section" id="official-dashboard" style="display: none;">
-                <div class="dashboard-grid">
-                    <div class="dashboard-card full-width">
-                        <div class="card-icon">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                        <h4>Nationwide Election Map</h4>
-                        <div id="national-map" style="height: 300px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                            <p class="text-muted">Interactive Election Map Loading...</p>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <h4>Polling Station Monitor</h4>
-                        <div id="station-monitoring">
-                            <p>Active Stations: <span class="text-success">1,247</span></p>
-                            <p>Anomalies: <span class="text-warning">3</span></p>
-                            <p>Offline: <span class="text-danger">2</span></p>
-                        </div>
-                        <button class="btn btn-outline-primary btn-sm" onclick="showAnomalies()">
-                            <i class="fas fa-flag me-1"></i>View Anomalies
-                        </button>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-calculator"></i>
-                        </div>
-                        <h4>Tallying System</h4>
-                        <div id="tallying-stats">
-                            <p>Results Received: <span id="results-received">234</span>/1,250</p>
-                            <p>Verified: <span id="results-verified">220</span></p>
-                        </div>
-                        <button class="btn btn-primary btn-sm" onclick="accessTallying()">
-                            <i class="fas fa-chart-bar me-1"></i>Access Tallying
-                        </button>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <h4>Approve/Reject Results</h4>
-                        <div id="pending-approval">
-                            <p>Pending Review: <span class="text-warning">12</span></p>
-                            <p>Flagged: <span class="text-danger">3</span></p>
-                        </div>
-                        <button class="btn btn-outline-primary btn-sm" onclick="reviewResults()">
-                            <i class="fas fa-check me-1"></i>Review Queue
-                        </button>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-folder"></i>
-                        </div>
-                        <h4>Evidence Repository</h4>
-                        <div id="evidence-stats">
-                            <p>Form 34A: <span class="text-success">1,150</span></p>
-                            <p>Form 34B: <span class="text-info">89</span></p>
-                            <p>Photos: <span class="text-primary">2,340</span></p>
-                        </div>
-                        <button class="btn btn-outline-primary btn-sm" onclick="accessEvidence()">
-                            <i class="fas fa-archive me-1"></i>Access Repository
-                        </button>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-exclamation-circle"></i>
-                        </div>
-                        <h4>Security Alerts</h4>
-                        <div id="security-alerts">
-                            <div class="alert alert-warning small">
-                                <i class="fas fa-triangle-exclamation me-1"></i>
-                                Unusual login attempt detected
-                            </div>
-                            <div class="alert alert-info small">
-                                <i class="fas fa-info-circle me-1"></i>
-                                System backup completed
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-users-cog"></i>
-                        </div>
-                        <h4>Admin Tools</h4>
-                        <div class="admin-buttons">
-                            <button class="btn btn-outline-primary btn-sm" onclick="assignClerks()">
-                                <i class="fas fa-user-plus me-1"></i>Assign Clerks
-                            </button>
-                            <button class="btn btn-outline-success btn-sm" onclick="publishResults()">
-                                <i class="fas fa-broadcast-tower me-1"></i>Publish Results
-                            </button>
-                            <button class="btn btn-outline-warning btn-sm" onclick="lockSystem()">
-                                <i class="fas fa-lock me-1"></i>Lock/Unlock
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Media House Account Page -->
-        <div id="media-house" class="page">
-            <div class="page-header">
-                <h1><i class="fas fa-broadcast-tower me-2"></i>Media House Account</h1>
-                <p>Broadcast & Analytics Portal</p>
-            </div>
-
-            <div class="auth-section" id="media-auth">
-                <div class="auth-card">
-                    <h3>Media Verification</h3>
-                    <form id="media-login-form">
-                        <div class="mb-3">
-                            <label for="media-company" class="form-label">Media Company</label>
-                            <select id="media-company" class="form-select" required>
-                                <option value="">Select Media House</option>
-                                <option value="kbc">Kenya Broadcasting Corporation</option>
-                                <option value="ntn">Nation Media Group</option>
-                                <option value="standard">Standard Group</option>
-                                <option value="citizen">Royal Media Services</option>
-                                <option value="bbc">BBC</option>
-                                <option value="cnn">CNN International</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="media-accreditation" class="form-label">Accreditation Number</label>
-                            <input type="text" id="media-accreditation" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="media-conduct" required>
-                                <label class="form-check-label" for="media-conduct">
-                                    I agree to the Media Code of Conduct
-                                </label>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-id-card me-1"></i>Verify Access
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="dashboard-section" id="media-dashboard" style="display: none;">
-                <div class="dashboard-grid">
-                    <div class="dashboard-card full-width">
-                        <div class="card-icon">
-                            <i class="fas fa-map"></i>
-                        </div>
-                        <h4>Live Election Heat Map</h4>
-                        <div id="media-heatmap" style="height: 250px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                            <p class="text-muted">Live Heat Map Loading...</p>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <h4>Polling Station Feeds</h4>
-                        <div id="station-feeds">
-                            <p>Available Feeds: <span class="text-success">156</span></p>
-                            <p>Live Streams: <span class="text-info">42</span></p>
-                        </div>
-                        <button class="btn btn-outline-primary btn-sm" onclick="viewFeeds()">
-                            <i class="fas fa-eye me-1"></i>View Feeds
-                        </button>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h4>Candidate Analytics</h4>
-                        <div id="candidate-analytics">
-                            <p>Profiles: <span class="text-primary">245</span></p>
-                            <p>Parties: <span class="text-success">67</span></p>
-                        </div>
-                        <button class="btn btn-outline-primary btn-sm" onclick="viewCandidateData()">
-                            <i class="fas fa-chart-pie me-1"></i>View Analytics
-                        </button>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h4>Voting Trends</h4>
-                        <div id="voting-trends">
-                            <p>Turnout: <span class="text-success">68.5%</span></p>
-                            <p>Peak Hour: <span class="text-info">10:00 AM</span></p>
-                            <p>Demographics: <span class="text-warning">Mixed</span></p>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <h4>Alerts Feed</h4>
-                        <div id="media-alerts" style="max-height: 150px; overflow-y: auto;">
-                            <div class="alert alert-info small mb-1">
-                                <strong>12:45 PM:</strong> Voting extended in Nakuru County
-                            </div>
-                            <div class="alert alert-warning small mb-1">
-                                <strong>11:30 AM:</strong> Power outage reported in Mombasa
-                            </div>
-                            <div class="alert alert-success small mb-1">
-                                <strong>09:15 AM:</strong> Record turnout in Central Kenya
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-code"></i>
-                        </div>
-                        <h4>Embed Tools</h4>
-                        <div class="embed-tools">
-                            <button class="btn btn-outline-primary btn-sm" onclick="generateEmbed('map')">
-                                <i class="fas fa-map me-1"></i>Map Embed
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="generateEmbed('results')">
-                                <i class="fas fa-chart-bar me-1"></i>Results Widget
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="generateEmbed('turnout')">
-                                <i class="fas fa-users me-1"></i>Turnout Counter
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-download"></i>
-                        </div>
-                        <h4>Data Packs</h4>
-                        <div class="data-packs">
-                            <button class="btn btn-outline-success btn-sm" onclick="downloadData('verified')">
-                                <i class="fas fa-check me-1"></i>Verified Data
-                            </button>
-                            <button class="btn btn-outline-info btn-sm" onclick="downloadData('historical')">
-                                <i class="fas fa-history me-1"></i>Historical
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-microphone"></i>
-                        </div>
-                        <h4>Interview Requests</h4>
-                        <div class="interview-tools">
-                            <button class="btn btn-outline-primary btn-sm" onclick="requestInterview('candidate')">
-                                <i class="fas fa-user-tie me-1"></i>Candidates
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" onclick="requestInterview('iebc')">
-                                <i class="fas fa-shield-alt me-1"></i>IEBC Officials
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <h4>Verification Hotline</h4>
-                        <div id="verification-hotline">
-                            <p><strong>Hotline:</strong> +254-20-123-4567</p>
-                            <p><strong>Status:</strong> <span class="status-active">Available</span></p>
-                            <button class="btn btn-outline-warning btn-sm" onclick="reportMisinformation()">
-                                <i class="fas fa-flag me-1"></i>Report False Info
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modals and Dynamic Content Areas -->
-    <div class="modal fade" id="dynamicModal" tabindex="-1" aria-labelledby="dynamicModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="dynamicModalLabel">Modal Title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="dynamicModalBody">
-                    <!-- Dynamic content will be loaded here -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                
+                <div class="final-message">
+                    <p><strong>Important:</strong> Your vote has been securely recorded and your account is now locked to prevent duplicate voting.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <script src="index.js"></script>
-</body>
+    <!-- Accessibility Controls -->
+    <div class="accessibility-controls">
+        <button class="access-btn" id="language-toggle">
+            <i class="fas fa-language"></i> Language
+        </button>
+        <button class="access-btn" id="font-size-toggle">
+            <i class="fas fa-text-height"></i> Font Size
+        </button>
+        <button class="access-btn" id="voice-toggle">
+            <i class="fas fa-volume-up"></i> Voice
+        </button>
+    </div>
 
+    <script src="script.js"></script>
+</body>
 </html>
