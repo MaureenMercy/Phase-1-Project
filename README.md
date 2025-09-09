@@ -1,276 +1,265 @@
-# IEBC Electoral Management System
+# IEBC Election Management System
 
-A comprehensive, three-tier electoral management system designed for the Independent Electoral and Boundaries Commission (IEBC) of Kenya. This system provides secure, role-based access control for regional officers, Bomas HQ operations, and executive board members.
+A comprehensive election management system for the Independent Electoral and Boundaries Commission (IEBC) of Kenya, providing full control over candidate approvals, position assignments, and ballot configuration workflows down to the ward level.
 
-## 🏗️ System Architecture
+## Features
 
-The system is split into three distinct access levels, each with specific responsibilities and permissions:
+### 🗳️ Candidate Registration
+- Complete candidate data management with validation
+- Document uploads (passport photos, academic certificates, nomination documents)
+- Deputy attachment for Governor and President positions
+- Party symbol, slogan, and color management
+- Status tracking (Pending Verification, Approved, Rejected)
+- Appeals window management for rejected applications
 
-### 1. Regional IEBC Officers / County Commissions
-- **Purpose**: Manage elections within specific counties/constituencies/wards
-- **Access Level**: Mid-tier, can manage but not override HQ decisions
-- **Authentication**: National ID + Biometric + OTP
-- **Scope**: Assigned county and constituency only (hardcoded access)
+### 📋 Position Assignment
+- Automatic position eligibility detection
+- Manual assignment with override capabilities
+- Support for all electoral positions:
+  - MCA (Ward level)
+  - Woman Rep (County level)
+  - MP (Constituency level)
+  - Senator (County level)
+  - Governor (County level)
+  - President (National level)
+- Duplicate candidate prevention
+- Jurisdiction validation
 
-### 2. IEBC Bomas HQ Operations Dashboard
-- **Purpose**: Mid-tier national operations & tally center management
-- **Access Level**: National-level credentials
-- **Authentication**: Admin password + OTP
-- **Scope**: National operations, regional monitoring, form processing
+### 🗂️ Ballot Approval Workflow
+- Multi-stage approval process:
+  1. Regional Officer submission
+  2. HQ review and confirmation
+  3. Legal Auditor compliance check
+  4. HQ final sign-off and lock
+- Real-time ballot preview generation
+- Candidate order and party information validation
+- Deputy attachment verification
+- Post-approval read-only access
 
-### 3. IEBC Board & Executive Dashboard
-- **Purpose**: Strategic oversight and emergency controls
-- **Access Level**: Ultra-restricted access for commissioners and executives
-- **Authentication**: Biometric + Physical token-based 2FA
-- **Scope**: Full system access, emergency controls, final approvals
+### 🔐 Security Features
+- JWT-based authentication
+- Role-based access control (HQ Officials, Regional Officers, Legal Auditors, Judiciary Observers)
+- Comprehensive audit logging with tamper-proof chain of custody
+- Multi-user approval requirements
+- IP address and session tracking
+- Password hashing with bcrypt
 
-## 🚀 Features
+### 📊 Dashboard & Analytics
+- Real-time metrics and statistics
+- Candidate registration overview
+- Position assignment tracking
+- Ballot approval status
+- System activity monitoring
+- Security event tracking
+- Jurisdiction-specific data views
 
-### Regional Admin Portal
-- **Election Setup Overview**: Position management, candidate approval, ballot status
-- **Clerk Deployment Manager**: Staff assignment, training tracking, device management
-- **Polling Station Monitor**: Real-time status, heat maps, alerts
-- **Voter Roll Verification**: Local voter database access, search tools
-- **Form 34/35 Monitor**: Upload tracking, verification, discrepancy detection
-- **Incident Logbook**: Issue reporting, escalation, evidence attachment
-- **County Analytics**: Turnout tracking, performance metrics, charts
+## User Roles
 
-### Bomas HQ Dashboard
-- **Real-time Results Map**: Live election outcomes visualization
-- **Tallying Engine**: Form 34B/34C processing and validation
-- **Evidence Repository**: Scanned form management and verification
-- **Alert Center**: Security, connectivity, and device monitoring
-- **Judiciary Sync**: Legal process integration
-- **Public Updates**: Results publishing and communication
+### IEBC HQ Officials
+- Full system access
+- Candidate approval/rejection
+- Position assignment
+- Ballot approval and locking
+- User management
+- System configuration
 
-### Executive Board Dashboard
-- **Nationwide Analytics**: Comprehensive national overview
-- **Legal View**: Real-time legal incident monitoring
-- **Treasury Monitor**: Budget tracking and fund disbursement
-- **Admin Console**: System-wide controls and emergency interventions
-- **Final Result Sign-off**: Official result authorization
-- **AI Briefings**: Fraud detection and risk assessment
+### Regional Electoral Officers
+- Candidate registration and verification
+- Position assignment for their jurisdiction
+- Ballot draft submission
+- Audit log access
 
-## 🛠️ Technology Stack
+### Legal Auditors
+- Ballot compliance verification
+- Legal requirement validation
+- Audit trail access
 
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+), Bootstrap 5
-- **Backend**: Node.js, Express.js, Socket.IO
-- **Database**: JSON Server (development), MongoDB/PostgreSQL (production)
-- **Authentication**: JWT, Biometric simulation, OTP
-- **Real-time**: WebSocket connections for live updates
-- **Charts**: Chart.js for data visualization
-- **Security**: Helmet.js, CORS, Role-based access control
+### Judiciary Observers
+- Read-only access to all data
+- Audit log viewing
+- Ballot preview access
 
-## 📋 Prerequisites
+## API Endpoints
 
-- Node.js (v16 or higher)
-- npm or yarn package manager
-- Modern web browser with ES6 support
-- Git for version control
+### Authentication
+- `POST /api/auth/register` - Register new user (HQ only)
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/profile` - Get user profile
+- `PUT /api/auth/profile` - Update user profile
+- `PUT /api/auth/change-password` - Change password
 
-## 🚀 Installation & Setup
+### Candidates
+- `GET /api/candidates` - List candidates with filtering
+- `GET /api/candidates/:id` - Get single candidate
+- `POST /api/candidates` - Create new candidate
+- `PUT /api/candidates/:id` - Update candidate
+- `PUT /api/candidates/:id/approve` - Approve candidate
+- `PUT /api/candidates/:id/reject` - Reject candidate
+- `POST /api/candidates/:id/notes` - Add note to candidate
+- `GET /api/candidates/stats/overview` - Get candidate statistics
 
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd iebc-electoral-system
-```
+### Positions
+- `GET /api/positions` - List all positions
+- `GET /api/positions/:id` - Get single position
+- `POST /api/positions` - Create new position (HQ only)
+- `PUT /api/positions/:id` - Update position
+- `POST /api/positions/auto-assign` - Auto-assign candidates
+- `POST /api/positions/assign` - Manual position assignment
+- `GET /api/positions/stats/assignments` - Get assignment statistics
+- `POST /api/positions/validate` - Validate assignments
 
-### 2. Install Dependencies
-```bash
-npm install
-```
+### Ballots
+- `GET /api/ballots` - List ballots with filtering
+- `GET /api/ballots/:id` - Get single ballot
+- `POST /api/ballots` - Create new ballot
+- `PUT /api/ballots/:id` - Update ballot configuration
+- `PUT /api/ballots/:id/submit` - Submit ballot for review
+- `PUT /api/ballots/:id/review` - Review ballot (HQ)
+- `PUT /api/ballots/:id/legal-audit` - Legal audit (Legal Auditor)
+- `PUT /api/ballots/:id/lock` - Lock ballot (Final approval)
+- `POST /api/ballots/:id/preview` - Generate ballot preview
+- `GET /api/ballots/stats/overview` - Get ballot statistics
 
-### 3. Start the Development Server
-```bash
-npm run dev
-```
+### Audit & Dashboard
+- `GET /api/audit/logs` - Get audit logs
+- `GET /api/audit/trail/:entityType/:entityId` - Get entity audit trail
+- `GET /api/audit/summary` - Get audit summary
+- `GET /api/audit/security` - Get security events
+- `GET /api/audit/export` - Export audit logs
+- `GET /api/dashboard/overview` - Dashboard overview
+- `GET /api/dashboard/candidates/stats` - Candidate statistics
+- `GET /api/dashboard/ballots/stats` - Ballot statistics
+- `GET /api/dashboard/activity` - System activity
+- `GET /api/dashboard/security` - Security dashboard
 
-This will start both the API server (port 3000) and the static file server (port 8080).
+## Installation
 
-### 4. Access the Portals
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd iebc-election-management
+   ```
 
-- **Regional Admin**: http://localhost:3000/regional-admin-portal.html
-- **Bomas HQ**: http://localhost:3000/bomas-hq-portal.html
-- **Executive Board**: http://localhost:3000/board-executive-portal.html
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-## 🔐 Authentication & Access
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
 
-### Demo Credentials
+4. **Set up MongoDB**
+   - Install MongoDB locally or use MongoDB Atlas
+   - Update `MONGODB_URI` in your `.env` file
 
-#### Regional Admin
-- **National ID**: `regional001`
-- **Password**: Any password (demo mode)
-- **OTP**: Any 6-digit code (demo mode)
-- **County**: Nairobi
-- **Constituency**: Westlands
+5. **Seed initial data**
+   ```bash
+   node scripts/seedData.js
+   ```
 
-#### Bomas HQ
-- **National ID**: `bomas001`
-- **Password**: Any password (demo mode)
-- **OTP**: Any 6-digit code (demo mode)
+6. **Start the server**
+   ```bash
+   npm start
+   # or for development
+   npm run dev
+   ```
 
-#### Executive Board
-- **National ID**: `executive001`
-- **Password**: Any password (demo mode)
-- **OTP**: Any 6-digit code (demo mode)
+## Default Login Credentials
 
-### Security Features
-- **JWT Tokens**: Secure session management
-- **Role-based Access**: Granular permission control
-- **Regional Isolation**: County/constituency data separation
-- **Audit Logging**: Complete activity tracking
-- **Biometric Simulation**: Fingerprint verification simulation
-- **OTP Verification**: Two-factor authentication
+After running the seed script, you can use these credentials:
 
-## 📊 Data Structure
+- **HQ Official**: `admin@iebc.go.ke` / `admin123`
+- **Regional Officer**: `nairobi@iebc.go.ke` / `regional123`
+- **Legal Auditor**: `legal@iebc.go.ke` / `legal123`
+- **Judiciary Observer**: `judiciary@iebc.go.ke` / `judiciary123`
 
-The system uses a comprehensive database structure including:
+## Database Schema
 
-- **Users**: Role-based user management
-- **Voters**: Voter registration and status
-- **Candidates**: Political candidate information
-- **Elections**: Election configuration and status
-- **Polling Stations**: Station management and monitoring
-- **Clerks**: Staff assignment and training
-- **Devices**: Equipment tracking and status
-- **Incidents**: Issue reporting and escalation
-- **Forms**: Form 34/35 upload and verification
-- **Results**: Election results and tallies
-- **Audit Logs**: Complete system activity tracking
+### Users
+- Authentication and authorization
+- Role-based permissions
+- Jurisdiction assignments
 
-## 🔄 Real-time Features
+### Candidates
+- Personal information
+- Political party details
+- Document uploads
+- Status tracking
+- Audit trail
 
-- **WebSocket Connections**: Live updates across all portals
-- **Live Monitoring**: Real-time polling station status
-- **Instant Alerts**: Critical incident notifications
-- **Live Sync**: Continuous data synchronization
-- **Status Updates**: Real-time device and system status
+### Positions
+- Electoral position definitions
+- Eligibility requirements
+- Ballot configuration
+- Jurisdiction rules
 
-## 📱 Responsive Design
+### Ballots
+- Position and jurisdiction mapping
+- Candidate assignments
+- Approval workflow
+- Validation results
+- Chain of custody
 
-All portals are fully responsive and optimized for:
-- Desktop computers
-- Tablets
-- Mobile devices
-- Various screen resolutions
+### Audit Logs
+- Comprehensive activity tracking
+- Tamper-proof integrity
+- Security event monitoring
+- Export capabilities
 
-## 🚨 Emergency Controls
+## Security Considerations
 
-### Executive Level Controls
-- **System Freeze**: Emergency system shutdown
-- **Result Recall**: Force ballot recalls
-- **User Suspension**: Immediate access revocation
-- **Emergency Interventions**: Critical system overrides
+- All passwords are hashed using bcrypt
+- JWT tokens for stateless authentication
+- Rate limiting to prevent abuse
+- Input validation and sanitization
+- File upload restrictions
+- Audit logging for compliance
+- Role-based access control
 
-### Regional Escalation
-- **Critical Incident Reporting**: Immediate HQ notification
-- **Evidence Upload**: Photo/video documentation
-- **Witness Statements**: Incident documentation
-- **AI Classification**: Automatic severity assessment
+## Development
 
-## 📈 Analytics & Reporting
-
-### Regional Analytics
-- County-level turnout tracking
-- Ward-by-ward performance
-- Clerk performance metrics
-- Device status distribution
-- Form upload progress
-
-### National Analytics
-- Country-wide turnout trends
-- Regional performance comparison
-- Risk zone identification
-- Legal dispute tracking
-- System health monitoring
-
-## 🔧 Configuration
-
-### Environment Variables
-```bash
-JWT_SECRET=your-secret-key
-PORT=3000
-NODE_ENV=development
-```
-
-### Database Configuration
-The system uses JSON Server for development. For production:
-- Replace JSON Server with MongoDB/PostgreSQL
-- Implement proper database connections
-- Add data validation and sanitization
-- Implement backup and recovery procedures
-
-## 🧪 Testing
-
-### Manual Testing
-1. **Authentication Flow**: Test login/logout for each portal
-2. **Navigation**: Verify all sections load correctly
-3. **Data Display**: Check data loading and display
-4. **Real-time Updates**: Test WebSocket connections
-5. **Responsive Design**: Test on various devices
-
-### Automated Testing
+### Running Tests
 ```bash
 npm test
 ```
 
-## 🚀 Production Deployment
+### Code Linting
+```bash
+npm run lint
+```
 
-### Security Considerations
-- Use environment variables for sensitive data
-- Implement HTTPS with valid SSL certificates
-- Set up proper firewall rules
-- Regular security audits and updates
-- Implement rate limiting and DDoS protection
+### Database Migrations
+```bash
+# Add new migration scripts as needed
+```
 
-### Performance Optimization
-- Database indexing and optimization
-- CDN for static assets
-- Load balancing for high availability
-- Caching strategies
-- Monitoring and alerting
-
-### Backup & Recovery
-- Regular database backups
-- Configuration backup
-- Disaster recovery procedures
-- Data retention policies
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-3. Add tests if applicable
-4. Submit a pull request
+4. Add tests if applicable
+5. Submit a pull request
 
-## 📄 License
+## License
 
-This project is licensed under the ISC License.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🆘 Support
+## Support
 
-For technical support or questions:
-- Create an issue in the repository
-- Contact the development team
-- Check the documentation
+For technical support or questions, please contact the IEBC Technical Team.
 
-## 🔮 Future Enhancements
+## Changelog
 
-- **AI Integration**: Advanced fraud detection
-- **Mobile Apps**: Native mobile applications
-- **Blockchain**: Immutable result storage
-- **Machine Learning**: Predictive analytics
-- **API Integration**: Third-party system integration
-- **Multi-language Support**: Local language interfaces
-
-## 📚 Additional Resources
-
-- [IEBC Official Website](https://www.iebc.or.ke/)
-- [Kenya Constitution Article 88](https://www.kenyalaw.org/lex/actview.xql?actid=Const2010)
-- [Electoral Laws and Regulations](https://www.iebc.or.ke/legal-framework/)
-
----
-
-**Note**: This is a demonstration system. For production use, implement proper security measures, database systems, and follow IEBC's official requirements and procedures.
+### Version 1.0.0
+- Initial release
+- Complete candidate management system
+- Position assignment workflow
+- Ballot approval process
+- Comprehensive audit logging
+- Role-based access control
+- Dashboard and analytics
