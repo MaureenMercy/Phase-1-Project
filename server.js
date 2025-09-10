@@ -12,6 +12,7 @@ const positionRoutes = require('./routes/positions');
 const ballotRoutes = require('./routes/ballots');
 const auditRoutes = require('./routes/audit');
 const dashboardRoutes = require('./routes/dashboard');
+const voterRoutes = require('./routes/voters');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -53,6 +54,7 @@ app.use('/api/positions', positionRoutes);
 app.use('/api/ballots', ballotRoutes);
 app.use('/api/audit', auditRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/voters', voterRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -57,7 +57,19 @@
       "status": "Active",
       "registrationDate": "2024-01-15T09:30:00.000Z",
       "hasVoted": false,
-      "votingTime": null
+      "votingTime": null,
+      "hasDisability": true,
+      "disabilityTypes": ["visual_impairment"],
+      "otherDisabilityDescription": null,
+      "accessibilityPreferences": {
+        "largeText": true,
+        "highContrast": true,
+        "voiceGuidance": true,
+        "screenReader": true,
+        "oneHandedMode": false,
+        "simplifiedInterface": false,
+        "audioInstructions": true
+      }
     },
     {
       "id": "12345678",
@@ -72,7 +84,19 @@
       "status": "Active",
       "registrationDate": "2024-01-16T10:15:00.000Z",
       "hasVoted": false,
-      "votingTime": null
+      "votingTime": null,
+      "hasDisability": false,
+      "disabilityTypes": [],
+      "otherDisabilityDescription": null,
+      "accessibilityPreferences": {
+        "largeText": false,
+        "highContrast": false,
+        "voiceGuidance": false,
+        "screenReader": false,
+        "oneHandedMode": false,
+        "simplifiedInterface": false,
+        "audioInstructions": false
+      }
     },
     {
       "id": "87654321",
@@ -87,7 +111,73 @@
       "status": "Active",
       "registrationDate": "2024-01-17T14:22:00.000Z",
       "hasVoted": false,
-      "votingTime": null
+      "votingTime": null,
+      "hasDisability": true,
+      "disabilityTypes": ["physical_disability", "cognitive_impairment"],
+      "otherDisabilityDescription": "Mobility issues affecting hand movement and memory processing difficulties",
+      "accessibilityPreferences": {
+        "largeText": true,
+        "highContrast": false,
+        "voiceGuidance": true,
+        "screenReader": false,
+        "oneHandedMode": true,
+        "simplifiedInterface": true,
+        "audioInstructions": true
+      }
+    },
+    {
+      "id": "11111111",
+      "name": "Mary Wanjiku",
+      "dob": "1988-07-12",
+      "address": "P.O. Box 5555, Nairobi",
+      "phone": "+254700000001",
+      "county": "Nairobi",
+      "constituency": "Westlands",
+      "ward": "Parklands",
+      "pollingStation": "Parklands High School",
+      "status": "Active",
+      "registrationDate": "2024-01-18T11:45:00.000Z",
+      "hasVoted": false,
+      "votingTime": null,
+      "hasDisability": true,
+      "disabilityTypes": ["hearing_impairment"],
+      "otherDisabilityDescription": null,
+      "accessibilityPreferences": {
+        "largeText": false,
+        "highContrast": true,
+        "voiceGuidance": false,
+        "screenReader": false,
+        "oneHandedMode": false,
+        "simplifiedInterface": false,
+        "audioInstructions": false
+      }
+    },
+    {
+      "id": "22222222",
+      "name": "Peter Mwangi",
+      "dob": "1995-03-25",
+      "address": "P.O. Box 6666, Nakuru",
+      "phone": "+254700000002",
+      "county": "Nakuru",
+      "constituency": "Nakuru Town East",
+      "ward": "Nakuru East",
+      "pollingStation": "Nakuru High School",
+      "status": "Active",
+      "registrationDate": "2024-01-19T08:20:00.000Z",
+      "hasVoted": false,
+      "votingTime": null,
+      "hasDisability": false,
+      "disabilityTypes": [],
+      "otherDisabilityDescription": null,
+      "accessibilityPreferences": {
+        "largeText": false,
+        "highContrast": false,
+        "voiceGuidance": false,
+        "screenReader": false,
+        "oneHandedMode": false,
+        "simplifiedInterface": false,
+        "audioInstructions": false
+      }
     }
   ],
   "candidates": [
