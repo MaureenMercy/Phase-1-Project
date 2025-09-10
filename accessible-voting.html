@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessible Voting Interface - IEBC</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --iebc-primary: #1e3a8a;
+            --iebc-secondary: #3b82f6;
+            --iebc-accent: #f59e0b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --border-color: #e5e7eb;
+        }
+
+        /* Accessibility Variables */
+        .accessibility-large-text {
+            font-size: 1.25rem !important;
+        }
+
+        .accessibility-high-contrast {
+            --text-primary: #000000 !important;
+            --text-secondary: #333333 !important;
+            --bg-primary: #ffffff !important;
+            --bg-secondary: #f0f0f0 !important;
+            --border-color: #000000 !important;
+        }
+
+        .accessibility-simplified {
+            --iebc-primary: #000000 !important;
+            --iebc-secondary: #333333 !important;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .voting-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .accessibility-bar {
+            background: var(--iebc-primary);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .accessibility-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .access-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .access-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .access-btn.active {
+            background: var(--iebc-accent);
+            border-color: var(--iebc-accent);
+        }
+
+        .voter-info-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .voter-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .voter-info-header h2 {
+            color: var(--iebc-primary);
+            margin: 0;
+        }
+
+        .accessibility-indicator {
+            background: var(--iebc-accent);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .voter-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .voter-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .voter-detail label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .voter-detail span {
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .voting-progress {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-header h3 {
+            color: var(--iebc-primary);
+            margin: 0 0 10px 0;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--iebc-primary);
+            transition: width 0.3s ease;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+
+        .progress-step.active .step-circle {
+            background: var(--iebc-primary);
+            border-color: var(--iebc-primary);
+            color: white;
+        }
+
+        .progress-step.completed .step-circle {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .voting-screen {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .screen-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .screen-header h2 {
+            color: var(--iebc-primary);
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+
+        .screen-header p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .candidates-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .candidate-card {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            background: var(--bg-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .candidate-card:hover {
+            border-color: var(--iebc-primary);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .candidate-card.selected {
+            border-color: var(--success);
+            background: #f0fdf4;
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+        }
+
+        .candidate-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .candidate-symbol {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--iebc-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .candidate-info {
+            flex: 1;
+        }
+
+        .candidate-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin: 0 0 8px 0;
+        }
+
+        .candidate-party {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin: 0 0 5px 0;
+        }
+
+        .candidate-deputy {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .candidate-radio {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 24px;
+            height: 24px;
+            accent-color: var(--success);
+        }
+
+        .voting-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+        }
+
+        .nav-btn {
+            background: var(--iebc-primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--iebc-secondary);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .skip-btn {
+            background: var(--warning);
+        }
+
+        .skip-btn:hover:not(:disabled) {
+            background: #d97706;
+        }
+
+        /* Accessibility Features */
+        .voice-guidance {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--iebc-primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 14px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .voice-guidance.active {
+            display: block;
+        }
+
+        .audio-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .audio-btn {
+            background: var(--iebc-primary);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+            font-size: 14px;
+        }
+
+        .audio-btn:hover {
+            background: var(--iebc-secondary);
+        }
+
+        .audio-btn.active {
+            background: var(--success);
+        }
+
+        /* High Contrast Mode */
+        .accessibility-high-contrast .candidate-card {
+            border-width: 3px;
+        }
+
+        .accessibility-high-contrast .candidate-card.selected {
+            border-width: 4px;
+        }
+
+        /* Large Text Mode */
+        .accessibility-large-text .candidate-name {
+            font-size: 2rem;
+        }
+
+        .accessibility-large-text .candidate-party {
+            font-size: 1.3rem;
+        }
+
+        .accessibility-large-text .candidate-deputy {
+            font-size: 1.2rem;
+        }
+
+        /* Simplified Interface */
+        .accessibility-simplified .candidate-card {
+            padding: 30px;
+        }
+
+        .accessibility-simplified .candidate-symbol {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+
+        .accessibility-simplified .candidate-radio {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* Screen Reader Support */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Focus Indicators */
+        .candidate-card:focus {
+            outline: 3px solid var(--iebc-accent);
+            outline-offset: 2px;
+        }
+
+        .nav-btn:focus {
+            outline: 3px solid var(--iebc-accent);
+            outline-offset: 2px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .voting-container {
+                padding: 10px;
+            }
+
+            .candidate-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .candidate-radio {
+                position: static;
+                margin-top: 15px;
+            }
+
+            .voting-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .progress-steps {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+
+        /* Animation for voice guidance */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .voice-guidance.speaking {
+            animation: pulse 1s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="voting-container">
+        <!-- Accessibility Bar -->
+        <div class="accessibility-bar">
+            <div>
+                <i class="fas fa-universal-access"></i>
+                <span>Accessible Voting Interface</span>
+            </div>
+            <div class="accessibility-controls">
+                <button class="access-btn" id="large-text-btn" title="Toggle Large Text">
+                    <i class="fas fa-text-height"></i> Large Text
+                </button>
+                <button class="access-btn" id="high-contrast-btn" title="Toggle High Contrast">
+                    <i class="fas fa-adjust"></i> High Contrast
+                </button>
+                <button class="access-btn" id="voice-guidance-btn" title="Toggle Voice Guidance">
+                    <i class="fas fa-volume-up"></i> Voice
+                </button>
+                <button class="access-btn" id="simplified-btn" title="Toggle Simplified Interface">
+                    <i class="fas fa-eye"></i> Simple
+                </button>
+            </div>
+        </div>
+
+        <!-- Voice Guidance Indicator -->
+        <div class="voice-guidance" id="voice-guidance">
+            <i class="fas fa-volume-up"></i>
+            <span>Voice guidance is active</span>
+        </div>
+
+        <!-- Voter Information Card -->
+        <div class="voter-info-card">
+            <div class="voter-info-header">
+                <h2><i class="fas fa-user"></i> Voter Information</h2>
+                <div class="accessibility-indicator" id="accessibility-indicator">
+                    <i class="fas fa-universal-access"></i>
+                    Accessibility Features Active
+                </div>
+            </div>
+            <div class="voter-details">
+                <div class="voter-detail">
+                    <label>Name:</label>
+                    <span id="voter-name">John Doe</span>
+                </div>
+                <div class="voter-detail">
+                    <label>National ID:</label>
+                    <span id="voter-id">12345678</span>
+                </div>
+                <div class="voter-detail">
+                    <label>County:</label>
+                    <span id="voter-county">Nairobi</span>
+                </div>
+                <div class="voter-detail">
+                    <label>Constituency:</label>
+                    <span id="voter-constituency">Westlands</span>
+                </div>
+                <div class="voter-detail">
+                    <label>Ward:</label>
+                    <span id="voter-ward">Westlands</span>
+                </div>
+                <div class="voter-detail">
+                    <label>Polling Station:</label>
+                    <span id="voter-polling-station">Westlands Primary School</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting Progress -->
+        <div class="voting-progress">
+            <div class="progress-header">
+                <h3>Voting Progress</h3>
+                <p>Complete all positions to submit your vote</p>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="progress-step" data-step="1">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">MCA</div>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">MP</div>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Women Rep</div>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Senator</div>
+                </div>
+                <div class="progress-step" data-step="5">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">Governor</div>
+                </div>
+                <div class="progress-step" data-step="6">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">President</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting Screens -->
+        <div class="voting-screens">
+            <!-- MCA Voting Screen -->
+            <div class="voting-screen active" id="mca-screen">
+                <div class="screen-header">
+                    <h2>Member of County Assembly (MCA)</h2>
+                    <p>Your Ward: <span id="ward-name">Westlands</span></p>
+                </div>
+                <div class="candidates-container" id="mca-candidates">
+                    <!-- Candidates will be loaded here -->
+                </div>
+            </div>
+
+            <!-- MP Voting Screen -->
+            <div class="voting-screen" id="mp-screen">
+                <div class="screen-header">
+                    <h2>Member of National Assembly (MP)</h2>
+                    <p>Your Constituency: <span id="constituency-name">Westlands</span></p>
+                </div>
+                <div class="candidates-container" id="mp-candidates">
+                    <!-- Candidates will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Women Rep Voting Screen -->
+            <div class="voting-screen" id="women-rep-screen">
+                <div class="screen-header">
+                    <h2>County Woman Representative</h2>
+                    <p>Your County: <span id="county-name">Nairobi</span></p>
+                </div>
+                <div class="candidates-container" id="women-rep-candidates">
+                    <!-- Candidates will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Senator Voting Screen -->
+            <div class="voting-screen" id="senator-screen">
+                <div class="screen-header">
+                    <h2>Senator</h2>
+                    <p>Your County: <span id="senator-county-name">Nairobi</span></p>
+                </div>
+                <div class="candidates-container" id="senator-candidates">
+                    <!-- Candidates will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Governor Voting Screen -->
+            <div class="voting-screen" id="governor-screen">
+                <div class="screen-header">
+                    <h2>Governor</h2>
+                    <p>Your County: <span id="governor-county-name">Nairobi</span></p>
+                </div>
+                <div class="candidates-container" id="governor-candidates">
+                    <!-- Candidates will be loaded here -->
+                </div>
+            </div>
+
+            <!-- President Voting Screen -->
+            <div class="voting-screen" id="president-screen">
+                <div class="screen-header">
+                    <h2>President</h2>
+                    <p>National Ballot</p>
+                </div>
+                <div class="candidates-container" id="president-candidates">
+                    <!-- Candidates will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting Controls -->
+        <div class="voting-controls">
+            <button class="nav-btn" id="prev-btn" disabled>
+                <i class="fas fa-arrow-left"></i> Previous
+            </button>
+            <button class="nav-btn" id="next-btn" disabled>
+                Next <i class="fas fa-arrow-right"></i>
+            </button>
+            <button class="nav-btn skip-btn" id="skip-btn" style="display: none;">
+                <i class="fas fa-forward"></i> Skip (Optional)
+            </button>
+            <button class="nav-btn" id="submit-btn" style="display: none; background: var(--success);">
+                <i class="fas fa-check"></i> Submit Vote
+            </button>
+        </div>
+    </div>
+
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button class="audio-btn" id="play-instructions">
+            <i class="fas fa-play"></i> Play Instructions
+        </button>
+        <button class="audio-btn" id="repeat-last">
+            <i class="fas fa-redo"></i> Repeat
+        </button>
+        <button class="audio-btn" id="stop-audio">
+            <i class="fas fa-stop"></i> Stop
+        </button>
+    </div>
+
+    <script>
+        // Accessibility and Voting System
+        class AccessibleVotingSystem {
+            constructor() {
+                this.currentStep = 1;
+                this.totalSteps = 6;
+                this.votes = {};
+                this.accessibilitySettings = {
+                    largeText: false,
+                    highContrast: false,
+                    voiceGuidance: false,
+                    simplified: false
+                };
+                this.speechSynthesis = window.speechSynthesis;
+                this.currentUtterance = null;
+                
+                this.initialize();
+            }
+
+            initialize() {
+                this.setupEventListeners();
+                this.loadVoterData();
+                this.loadCandidates();
+                this.updateProgress();
+                this.updateAccessibilityIndicator();
+            }
+
+            setupEventListeners() {
+                // Accessibility controls
+                document.getElementById('large-text-btn').addEventListener('click', () => this.toggleLargeText());
+                document.getElementById('high-contrast-btn').addEventListener('click', () => this.toggleHighContrast());
+                document.getElementById('voice-guidance-btn').addEventListener('click', () => this.toggleVoiceGuidance());
+                document.getElementById('simplified-btn').addEventListener('click', () => this.toggleSimplified());
+
+                // Audio controls
+                document.getElementById('play-instructions').addEventListener('click', () => this.playInstructions());
+                document.getElementById('repeat-last').addEventListener('click', () => this.repeatLast());
+                document.getElementById('stop-audio').addEventListener('click', () => this.stopAudio());
+
+                // Navigation controls
+                document.getElementById('prev-btn').addEventListener('click', () => this.previousStep());
+                document.getElementById('next-btn').addEventListener('click', () => this.nextStep());
+                document.getElementById('submit-btn').addEventListener('click', () => this.submitVote());
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+            }
+
+            loadVoterData() {
+                // Simulate loading voter data with disability information
+                const voterData = {
+                    name: "John Doe",
+                    nationalId: "12345678",
+                    county: "Nairobi",
+                    constituency: "Westlands",
+                    ward: "Westlands",
+                    pollingStation: "Westlands Primary School",
+                    hasDisability: true,
+                    disabilityTypes: ['visual_impairment', 'cognitive_impairment'],
+                    accessibilityPreferences: {
+                        largeText: true,
+                        highContrast: true,
+                        voiceGuidance: true,
+                        simplifiedInterface: true
+                    }
+                };
+
+                // Apply accessibility preferences
+                if (voterData.accessibilityPreferences.largeText) {
+                    this.accessibilitySettings.largeText = true;
+                    document.body.classList.add('accessibility-large-text');
+                    document.getElementById('large-text-btn').classList.add('active');
+                }
+
+                if (voterData.accessibilityPreferences.highContrast) {
+                    this.accessibilitySettings.highContrast = true;
+                    document.body.classList.add('accessibility-high-contrast');
+                    document.getElementById('high-contrast-btn').classList.add('active');
+                }
+
+                if (voterData.accessibilityPreferences.voiceGuidance) {
+                    this.accessibilitySettings.voiceGuidance = true;
+                    document.getElementById('voice-guidance').classList.add('active');
+                    document.getElementById('voice-guidance-btn').classList.add('active');
+                }
+
+                if (voterData.accessibilityPreferences.simplifiedInterface) {
+                    this.accessibilitySettings.simplified = true;
+                    document.body.classList.add('accessibility-simplified');
+                    document.getElementById('simplified-btn').classList.add('active');
+                }
+
+                // Update voter info display
+                document.getElementById('voter-name').textContent = voterData.name;
+                document.getElementById('voter-id').textContent = voterData.nationalId;
+                document.getElementById('voter-county').textContent = voterData.county;
+                document.getElementById('voter-constituency').textContent = voterData.constituency;
+                document.getElementById('voter-ward').textContent = voterData.ward;
+                document.getElementById('voter-polling-station').textContent = voterData.pollingStation;
+            }
+
+            loadCandidates() {
+                const candidates = {
+                    mca: [
+                        { id: 'MCA001', name: 'Alice Wanjiku', party: 'UDA', symbol: 'A' },
+                        { id: 'MCA002', name: 'Peter Kimani', party: 'ODM', symbol: 'B' }
+                    ],
+                    mp: [
+                        { id: 'MP001', name: 'Kimani Ichung\'wa', party: 'UDA', symbol: 'A' },
+                        { id: 'MP002', name: 'Raila Odinga', party: 'ODM', symbol: 'B' }
+                    ],
+                    womenRep: [
+                        { id: 'WR001', name: 'Martha Karua', party: 'NARC Kenya', symbol: 'A' },
+                        { id: 'WR002', name: 'Faith Kamande', party: 'KANU', symbol: 'B' }
+                    ],
+                    senator: [
+                        { id: 'SEN001', name: 'Karen Nyamu', party: 'UDA', symbol: 'A' },
+                        { id: 'SEN002', name: 'Johnson Sakaja', party: 'UDA', symbol: 'B' }
+                    ],
+                    governor: [
+                        { id: 'GOV001', name: 'Faith Kamande', party: 'KANU', symbol: 'A' },
+                        { id: 'GOV002', name: 'Johnson Sakaja', party: 'UDA', symbol: 'B' }
+                    ],
+                    president: [
+                        { id: 'PRES001', name: 'William Ruto', party: 'UDA', symbol: 'A', deputy: 'Rigathi Gachagua' },
+                        { id: 'PRES002', name: 'Raila Odinga', party: 'ODM', symbol: 'B', deputy: 'Martha Karua' }
+                    ]
+                };
+
+                // Load candidates for each position
+                Object.keys(candidates).forEach(position => {
+                    const container = document.getElementById(`${position}-candidates`);
+                    if (container) {
+                        container.innerHTML = '';
+                        candidates[position].forEach(candidate => {
+                            const candidateCard = this.createCandidateCard(candidate, position);
+                            container.appendChild(candidateCard);
+                        });
+                    }
+                });
+            }
+
+            createCandidateCard(candidate, position) {
+                const card = document.createElement('div');
+                card.className = 'candidate-card';
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('role', 'button');
+                card.setAttribute('aria-label', `Select ${candidate.name} for ${position}`);
+                
+                card.innerHTML = `
+                    <div class="candidate-content">
+                        <div class="candidate-symbol">${candidate.symbol}</div>
+                        <div class="candidate-info">
+                            <h3 class="candidate-name">${candidate.name}</h3>
+                            <p class="candidate-party">Party: ${candidate.party}</p>
+                            ${candidate.deputy ? `<p class="candidate-deputy">Deputy: ${candidate.deputy}</p>` : ''}
+                        </div>
+                        <input type="radio" name="${position}" value="${candidate.id}" class="candidate-radio" aria-label="Select ${candidate.name}">
+                    </div>
+                `;
+
+                // Add event listeners
+                card.addEventListener('click', () => this.selectCandidate(candidate.id, position, card));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.selectCandidate(candidate.id, position, card);
+                    }
+                });
+
+                return card;
+            }
+
+            selectCandidate(candidateId, position, cardElement) {
+                // Clear previous selection for this position
+                const container = cardElement.closest('.candidates-container');
+                container.querySelectorAll('.candidate-card').forEach(card => {
+                    card.classList.remove('selected');
+                    card.querySelector('input[type="radio"]').checked = false;
+                });
+
+                // Select new candidate
+                cardElement.classList.add('selected');
+                cardElement.querySelector('input[type="radio"]').checked = true;
+                this.votes[position] = candidateId;
+
+                // Announce selection
+                if (this.accessibilitySettings.voiceGuidance) {
+                    const candidateName = cardElement.querySelector('.candidate-name').textContent;
+                    this.speak(`Selected ${candidateName} for ${position}`);
+                }
+
+                this.updateProgress();
+            }
+
+            updateProgress() {
+                const completedSteps = Object.keys(this.votes).length;
+                const progress = (completedSteps / this.totalSteps) * 100;
+                
+                document.getElementById('progress-fill').style.width = progress + '%';
+                
+                // Update step indicators
+                document.querySelectorAll('.progress-step').forEach((step, index) => {
+                    step.classList.remove('active', 'completed');
+                    if (index + 1 < this.currentStep) {
+                        step.classList.add('completed');
+                    } else if (index + 1 === this.currentStep) {
+                        step.classList.add('active');
+                    }
+                });
+
+                // Update navigation buttons
+                this.updateNavigationButtons();
+            }
+
+            updateNavigationButtons() {
+                const prevBtn = document.getElementById('prev-btn');
+                const nextBtn = document.getElementById('next-btn');
+                const submitBtn = document.getElementById('submit-btn');
+
+                prevBtn.disabled = this.currentStep === 1;
+                
+                if (this.currentStep < this.totalSteps) {
+                    nextBtn.style.display = 'inline-flex';
+                    submitBtn.style.display = 'none';
+                } else {
+                    nextBtn.style.display = 'none';
+                    submitBtn.style.display = 'inline-flex';
+                }
+            }
+
+            nextStep() {
+                if (this.currentStep < this.totalSteps) {
+                    this.currentStep++;
+                    this.showCurrentScreen();
+                    this.updateProgress();
+                    
+                    if (this.accessibilitySettings.voiceGuidance) {
+                        this.speak(`Now voting for step ${this.currentStep}`);
+                    }
+                }
+            }
+
+            previousStep() {
+                if (this.currentStep > 1) {
+                    this.currentStep--;
+                    this.showCurrentScreen();
+                    this.updateProgress();
+                    
+                    if (this.accessibilitySettings.voiceGuidance) {
+                        this.speak(`Back to step ${this.currentStep}`);
+                    }
+                }
+            }
+
+            showCurrentScreen() {
+                const screens = ['mca', 'mp', 'women-rep', 'senator', 'governor', 'president'];
+                const currentScreen = screens[this.currentStep - 1];
+                
+                document.querySelectorAll('.voting-screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+                
+                document.getElementById(`${currentScreen}-screen`).classList.add('active');
+            }
+
+            submitVote() {
+                if (Object.keys(this.votes).length === 0) {
+                    alert('Please select at least one candidate before submitting.');
+                    return;
+                }
+
+                if (confirm('Are you sure you want to submit your vote? This action cannot be undone.')) {
+                    // Simulate vote submission
+                    console.log('Votes submitted:', this.votes);
+                    alert('Your vote has been successfully submitted!');
+                    
+                    if (this.accessibilitySettings.voiceGuidance) {
+                        this.speak('Your vote has been successfully submitted. Thank you for participating in the democratic process.');
+                    }
+                }
+            }
+
+            // Accessibility Methods
+            toggleLargeText() {
+                this.accessibilitySettings.largeText = !this.accessibilitySettings.largeText;
+                document.body.classList.toggle('accessibility-large-text', this.accessibilitySettings.largeText);
+                document.getElementById('large-text-btn').classList.toggle('active', this.accessibilitySettings.largeText);
+            }
+
+            toggleHighContrast() {
+                this.accessibilitySettings.highContrast = !this.accessibilitySettings.highContrast;
+                document.body.classList.toggle('accessibility-high-contrast', this.accessibilitySettings.highContrast);
+                document.getElementById('high-contrast-btn').classList.toggle('active', this.accessibilitySettings.highContrast);
+            }
+
+            toggleVoiceGuidance() {
+                this.accessibilitySettings.voiceGuidance = !this.accessibilitySettings.voiceGuidance;
+                document.getElementById('voice-guidance').classList.toggle('active', this.accessibilitySettings.voiceGuidance);
+                document.getElementById('voice-guidance-btn').classList.toggle('active', this.accessibilitySettings.voiceGuidance);
+            }
+
+            toggleSimplified() {
+                this.accessibilitySettings.simplified = !this.accessibilitySettings.simplified;
+                document.body.classList.toggle('accessibility-simplified', this.accessibilitySettings.simplified);
+                document.getElementById('simplified-btn').classList.toggle('active', this.accessibilitySettings.simplified);
+            }
+
+            // Audio Methods
+            speak(text) {
+                if (!this.accessibilitySettings.voiceGuidance) return;
+                
+                this.stopAudio();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                utterance.volume = 0.8;
+                
+                this.currentUtterance = utterance;
+                this.speechSynthesis.speak(utterance);
+                
+                document.getElementById('voice-guidance').classList.add('speaking');
+                
+                utterance.onend = () => {
+                    document.getElementById('voice-guidance').classList.remove('speaking');
+                };
+            }
+
+            playInstructions() {
+                const instructions = "Welcome to the accessible voting system. Use the arrow keys to navigate between candidates. Press Enter or Space to select a candidate. Use the Previous and Next buttons to move between voting positions.";
+                this.speak(instructions);
+            }
+
+            repeatLast() {
+                if (this.currentUtterance) {
+                    this.speechSynthesis.speak(this.currentUtterance);
+                }
+            }
+
+            stopAudio() {
+                this.speechSynthesis.cancel();
+                document.getElementById('voice-guidance').classList.remove('speaking');
+            }
+
+            handleKeyboard(e) {
+                if (e.key === 'Tab') return; // Allow normal tab navigation
+                
+                const activeElement = document.activeElement;
+                const candidateCards = document.querySelectorAll('.candidate-card');
+                
+                switch(e.key) {
+                    case 'ArrowUp':
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        const currentIndex = Array.from(candidateCards).indexOf(activeElement);
+                        let nextIndex;
+                        
+                        if (e.key === 'ArrowUp') {
+                            nextIndex = currentIndex > 0 ? currentIndex - 1 : candidateCards.length - 1;
+                        } else {
+                            nextIndex = currentIndex < candidateCards.length - 1 ? currentIndex + 1 : 0;
+                        }
+                        
+                        candidateCards[nextIndex].focus();
+                        break;
+                        
+                    case 'Enter':
+                    case ' ':
+                        if (activeElement.classList.contains('candidate-card')) {
+                            e.preventDefault();
+                            activeElement.click();
+                        }
+                        break;
+                }
+            }
+
+            updateAccessibilityIndicator() {
+                const activeFeatures = Object.values(this.accessibilitySettings).filter(Boolean).length;
+                const indicator = document.getElementById('accessibility-indicator');
+                
+                if (activeFeatures > 0) {
+                    indicator.innerHTML = `<i class="fas fa-universal-access"></i> ${activeFeatures} Accessibility Features Active`;
+                } else {
+                    indicator.innerHTML = `<i class="fas fa-universal-access"></i> Standard Interface`;
+                }
+            }
+        }
+
+        // Initialize the voting system when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AccessibleVotingSystem();
+        });
+    </script>
+</body>
+</html>
