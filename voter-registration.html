@@ -512,7 +512,7 @@
                 <button type="button" id="prev-btn" style="display: none; margin-right: 10px; background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
                     <i class="fas fa-arrow-left"></i> Previous
                 </button>
-                <button type="button" id="next-btn" style="background: var(--iebc-primary); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                <button type="button" id="next-btn" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
                     Next <i class="fas fa-arrow-right"></i>
                 </button>
                 <button type="submit" id="submit-btn" style="display: none; background: #28a745; color: white; border: none; padding: 15px 40px; border-radius: 8px; font-size: 18px; font-weight: 600; cursor: pointer;">
@@ -541,6 +541,7 @@
         function initializeForm() {
             updateProgress();
             updateStepVisibility();
+            updateNavigationButtons();
         }
 
         function setupEventListeners() {
@@ -592,6 +593,7 @@
 
             // Navigation buttons
             document.getElementById('next-btn').addEventListener('click', nextStep);
+            
             document.getElementById('prev-btn').addEventListener('click', prevStep);
             document.getElementById('submit-btn').addEventListener('click', submitForm);
 
