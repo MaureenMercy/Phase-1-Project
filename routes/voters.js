@@ -155,11 +155,37 @@ router.post('/register', [
 // Get voter by National ID
 router.get('/:nationalId', async (req, res) => {
   try {
-    const voter = await Voter.findOne({ nationalId: req.params.nationalId });
+    const { nationalId } = req.params;
+    
+    // Validate National ID format
+    if (!/^\d{8}$/.test(nationalId)) {
+      return res.status(400).json({ 
+        error: 'Invalid National ID format. Must be exactly 8 digits.',
+        code: 'INVALID_NATIONAL_ID'
+      });
+    }
+    
+    const voter = await Voter.findOne({ nationalId });
     
     if (!voter) {
-      return res.status(404).json({ error: 'Voter not found' });
+      return res.status(404).json({ 
+        error: 'Voter not found',
+        code: 'VOTER_NOT_FOUND',
+        message: 'No voter registered with this National ID'
+      });
     }
+
+    // Calculate age and eligibility
+    const today = new Date();
+    const birthDate = new Date(voter.dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    const eligibleToVote = voter.status === 'Active' && age >= 18 && !voter.hasVoted;
 
     res.json({
       voter: {
@@ -167,6 +193,7 @@ router.get('/:nationalId', async (req, res) => {
         nationalId: voter.nationalId,
         name: voter.name,
         dateOfBirth: voter.dateOfBirth,
+        age: age,
         address: voter.address,
         phone: voter.phone,
         county: voter.county,
@@ -180,12 +207,91 @@ router.get('/:nationalId', async (req, res) => {
         accessibilityPreferences: voter.accessibilityPreferences,
         hasVoted: voter.hasVoted,
         votingTime: voter.votingTime,
-        registrationDate: voter.registrationDate
+        registrationDate: voter.registrationDate,
+        eligibleToVote: eligibleToVote
+      },
+      registrationStatus: {
+        isRegistered: true,
+        status: voter.status,
+        eligibleToVote: eligibleToVote,
+        hasVoted: voter.hasVoted,
+        registrationDate: voter.registrationDate,
+        pollingStation: voter.pollingStation,
+        accessibilityNeeds: voter.hasDisability ? {
+          hasDisability: true,
+          disabilityTypes: voter.disabilityTypes,
+          accessibilityPreferences: voter.accessibilityPreferences
+        } : null
       }
     });
   } catch (error) {
     console.error('Get voter error:', error);
-    res.status(500).json({ error: 'Server error fetching voter' });
+    res.status(500).json({ 
+      error: 'Server error fetching voter',
+      code: 'SERVER_ERROR'
+    });
+  }
+});
+
+// Check voter registration status (simplified endpoint)
+router.get('/:nationalId/status', async (req, res) => {
+  try {
+    const { nationalId } = req.params;
+    
+    // Validate National ID format
+    if (!/^\d{8}$/.test(nationalId)) {
+      return res.status(400).json({ 
+        error: 'Invalid National ID format. Must be exactly 8 digits.',
+        code: 'INVALID_NATIONAL_ID'
+      });
+    }
+    
+    const voter = await Voter.findOne({ nationalId });
+    
+    if (!voter) {
+      return res.status(404).json({ 
+        error: 'Voter not found',
+        code: 'VOTER_NOT_FOUND',
+        message: 'No voter registered with this National ID'
+      });
+    }
+    
+    // Calculate age and eligibility
+    const today = new Date();
+    const birthDate = new Date(voter.dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    const eligibleToVote = voter.status === 'Active' && age >= 18 && !voter.hasVoted;
+    
+    res.json({
+      nationalId: voter.nationalId,
+      name: voter.name,
+      isRegistered: true,
+      status: voter.status,
+      eligibleToVote: eligibleToVote,
+      hasVoted: voter.hasVoted,
+      age: age,
+      pollingStation: voter.pollingStation,
+      county: voter.county,
+      constituency: voter.constituency,
+      ward: voter.ward,
+      registrationDate: voter.registrationDate,
+      accessibilityNeeds: voter.hasDisability,
+      message: eligibleToVote ? 
+        (voter.hasVoted ? 'Voter has already voted' : 'Voter is eligible to vote') :
+        'Voter is not eligible to vote'
+    });
+  } catch (error) {
+    console.error('Voter status check error:', error);
+    res.status(500).json({ 
+      error: 'Server error checking voter status',
+      code: 'SERVER_ERROR'
+    });
   }
 });
 
